@@ -1,0 +1,15 @@
+{
+    "editor.formatOnPaste": true,
+    "editor.formatOnSave": true,
+    "editor.formatOnSaveMode": "file",
+    "editor.formatOnType": true,
+    "git.alwaysSignOff": true,
+    "git.enableCommitSigning": true,
+    "git.enabled": true,
+    "git.requireGitUserConfig": true,
+    "json.format.enable": true,
+    "[json]": {
+        "editor.formatOnPaste": false,
+        "editor.formatOnSave": false
+    }
+}
