@@ -9,11 +9,13 @@ on:
     paths:
     - '**.py'
     - '**.c'
+    - '**.h'
   pull_request:
     branches: [ "main" ]
     paths:
     - '**.py'
     - '**.c'
+    - '**.h'
 
 jobs:
   build:
