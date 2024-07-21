@@ -64,10 +64,6 @@ struct pyfb_framebuffer {
      * depth, use the @c pyfb_videomode_info.vinfo.bits_per_pixel field.
      */
     union {
-        /**
-         * Used if the framebuffer depth (color bits) is 8bit.
-         */
-        uint8_t* u8_buffer;
 
         /**
          * Used if the framebuffer depth (color bits) is 16bit.
@@ -79,6 +75,49 @@ struct pyfb_framebuffer {
          */
         uint32_t* u32_buffer;
     };
+
+    /**
+     * The filedescriptor to the target framebuffer.
+     */
+    int fb_fd;
+};
+
+/**
+ * The color structure used as color for a framebuffer.
+ */
+struct pyfb_color {
+    
+    /**
+     * The union for storing the color data.
+     */
+    union {
+
+        /**
+         * Used if the color is in 16bit format.
+         */
+        uint16_t u16_color;
+
+        /**
+         * Used if the color is in 32bit format.
+         */
+        uint32_t u32_color;
+    };
+
+    /**
+     * The color format used. 
+     */
+    enum format {
+        
+        /**
+         * Indicates that the color format is 16bit.
+         */
+        COLOR_FORMAT_U16,
+
+        /**
+         * Indicates that the color format is 32bit.
+         */
+        COLOR_FORMAT_U32
+    };
 };
 
 /**
@@ -87,11 +126,11 @@ struct pyfb_framebuffer {
  * this framebuffer only when the pyfb_close function is called the amount of times
  * this function has been called to be sure no user is using it.
  *
- * @param num The framebuffer number to open, usually a number between 0 and 31
+ * @param fbnum The framebuffer number to open, usually a number between 0 and 31
  *
  * @return By success 0, else -1
  */
-extern int pyfb_open(uint8_t num);
+extern int pyfb_open(uint8_t fbnum);
 
 /**
  * Closes a framebuffer. This function does not closes the framebuffer automaticly!
@@ -100,27 +139,79 @@ extern int pyfb_open(uint8_t num);
  * framebuffer. Only if no other user is marked using this framebuffer, then all
  * resources related to the framebuffer will be cleaned up.
  *
- * @param num The framebuffer number to close
+ * @param fbnum The framebuffer number to close
  */
-extern void pyfb_close(uint8_t num);
+extern void pyfb_close(uint8_t fbnum);
 
 /**
  * Returns the videomode info of a specific framebuffer. If the framebuffer is not
  * opened, then the @c pyfb_videomode_info.fb_size_b field will be @c 0 . If it is
  * not 0, then the structure is valid and the framebuffer is opened.
  *
- * @param num The framebuffer number to get the infos of
+ * @param fbnum The framebuffer number to get the infos of
  * @param info_ptr The pointer to copy the videmode info to
  */
-extern void pyfb_vinfo(uint8_t num, struct pyfb_videomode_info* info_ptr);
+extern void pyfb_vinfo(uint8_t fbnum, struct pyfb_videomode_info* info_ptr);
 
 /**
  * Checks if the framebuffer number is opened.
  *
- * @param num The framebuffer number to check
+ * @param fbnum The framebuffer number to check
  *
  * @return If opened returns 0, else -1
  */
-extern int pyfb_isopen(uint8_t num);
+extern int pyfb_isopen(uint8_t fbnum);
+
+/**
+ * Paints a single pixel to the framebuffer. This function is secure because before
+ * painting, it validates the arguments.
+ *
+ * @param fbnum The number of the target framebuffer
+ * @param x The x coordinate of the pixel
+ * @param y The y coordinate of the pixel
+ * @param color The color structure
+ */
+extern void pyfb_ssetPixel(uint8_t fbnum, unsigned long int x, unsigned long int y, const struct pyfb_color* color);
+
+/**
+ * Paints a single pixel to the framebuffer. This function is the insecure way because due
+ * to performance increase, the arguments will not be checked. Please make sure
+ * the arguments are correct, because it may cause a memory error if the data is
+ * invalid. Also note that this function is marked as __APISTATUS_internal. Means
+ * this is internal API and sould not be accessible from outside.
+ *
+ * @param fbnum The number of the target framebuffer
+ * @param x The x coordinate of the pixel
+ * @param y The y coordinate of the pixel
+ * @param color The color structure
+ */
+extern void __APISTATUS_internal pyfb_setPixel(uint8_t fbnum, unsigned long int x, unsigned long y, const struct pyfb_color* color);
+
+/**
+ * Pains a exactly horizontal line. This function is secure because before painting,
+ * it validates the arguments.
+ *
+ * @param fbnum The number of the target framebuffer
+ * @param y The row on which to draw the line
+ * @param x The starting x coordinate (included)
+ * @param len The length of the line in pixel, means first pixel is painted on the x argument coordinate
+ * @param color The color structure
+ */
+extern void pyfb_sdrawHorizontalLine(uint8_t fbnum, unsigned long int x, unsigned long y, unsigned long int len, const struct pyfb_color* color);
+
+/**
+ * Pains a exactly horizontal line. This function is the insecure way because due to performance
+ * increase, the arguments will not be checked. Please make sure
+ * the arguments are correct, because it may cause a memory error if the data is
+ * invalid. Also note that this function is marked as __APISTATUS_internal. Means
+ * this is internal API and sould not be accessible from outside.
+ *
+ * @param fbnum The number of the target framebuffer
+ * @param y The row on which to draw the line
+ * @param x The starting x coordinate (included)
+ * @param len The length of the line in pixel, means first pixel is painted on the x argument coordinate
+ * @param color The color structure
+ */
+extern void __APISTATUS_internal pyfb_drawHorizontalLine(uint8_t fbnum, unsigned long int x, unsigned long int y, unsigned long int len, const struct pyfb_color* color);
 
 #endif
