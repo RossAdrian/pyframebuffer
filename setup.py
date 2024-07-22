@@ -1,4 +1,10 @@
 from setuptools import setup
+import platform
+
+def check_platform():
+    if platform.system() != "Linux":
+        raise RuntimeError("This package does only support Linux")
+    print("Installing on platform: ", platform.system())
 
 setup(name="pyframebuffer",
       version="1.0",
@@ -10,5 +16,6 @@ setup(name="pyframebuffer",
       long_description="A linux library written in C and Python to draw with graphic primitives to the framebuffer.",
       maintainer="Adrian Roß",
       maintainer_email="adrian.ross@ross-agentur.de",
-      url="https://github.com/RossAdrian/pyframebuffer"
+      url="https://github.com/RossAdrian/pyframebuffer",
+      cmdclass={'install', check_platform}
      )
