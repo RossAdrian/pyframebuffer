@@ -188,7 +188,7 @@ extern void pyfb_ssetPixel(uint8_t fbnum, unsigned long int x, unsigned long int
 extern void __APISTATUS_internal pyfb_setPixel(uint8_t fbnum, unsigned long int x, unsigned long y, const struct pyfb_color* color);
 
 /**
- * Pains a exactly horizontal line. This function is secure because before painting,
+ * Paints a exactly horizontal line. This function is secure because before painting,
  * it validates the arguments.
  *
  * @param fbnum The number of the target framebuffer
@@ -200,7 +200,7 @@ extern void __APISTATUS_internal pyfb_setPixel(uint8_t fbnum, unsigned long int 
 extern void pyfb_sdrawHorizontalLine(uint8_t fbnum, unsigned long int x, unsigned long y, unsigned long int len, const struct pyfb_color* color);
 
 /**
- * Pains a exactly horizontal line. This function is the insecure way because due to performance
+ * Paints a exactly horizontal line. This function is the insecure way because due to performance
  * increase, the arguments will not be checked. Please make sure
  * the arguments are correct, because it may cause a memory error if the data is
  * invalid. Also note that this function is marked as __APISTATUS_internal. Means
@@ -213,5 +213,19 @@ extern void pyfb_sdrawHorizontalLine(uint8_t fbnum, unsigned long int x, unsigne
  * @param color The color structure
  */
 extern void __APISTATUS_internal pyfb_drawHorizontalLine(uint8_t fbnum, unsigned long int x, unsigned long int y, unsigned long int len, const struct pyfb_color* color);
+
+/**
+ * Paints the content of the offscreen buffer to the framebuffer. This function must be callen
+ * because this is the only operation that is required to paint the content of the offscreen
+ * buffer to the framebuffer. All other paint operations are only for painting to the offscreen
+ * buffer, that must be flushed to the framebuffer with this function to display all content.
+ *
+ * This function will block until the buffer content is fully transfered to the framebuffer.
+ * As this operation must be transfered via DMA, this still can take a while. In the internet,
+ * it says that it can take something between 20 and 100 milliseconds.
+ *
+ * @param fbnum The framebuffer number of which to flush all buffers
+ */
+extern void pyfb_flushBuffer(uint8_t fbnum);
 
 #endif
