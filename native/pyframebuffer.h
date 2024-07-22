@@ -74,6 +74,32 @@ struct pyfb_framebuffer {
          * Used if the framebuffer depth (color bits) is 32bit.
          */
         uint32_t* u32_buffer;
+    } buffers[2];
+
+    /**
+     * The current framebuffer index. The enum constant can be used directly
+     * to get the index of the buffer to use. For example:
+     *
+     * \code{.c}
+     *
+     * struct pyfb_framebuffer* buffer = XXX();
+     * uint32_t* offscreen_buffer = buffer->buffers[buffer->used_buffer].u32_buffer;
+     *
+     * // render here something with this buffer
+     *
+     * \endcode
+     */
+    enum used_buffer {
+        
+        /**
+         * Set if the first buffer is in use.
+         */
+        BUFFER_USED_0 = 0,
+
+        /**
+         * Set if the second buffer is in use.
+         */
+        BUFFER_USED_1 = 1
     };
 
     /**
@@ -223,6 +249,9 @@ extern void __APISTATUS_internal pyfb_drawHorizontalLine(uint8_t fbnum, unsigned
  * This function will block until the buffer content is fully transfered to the framebuffer.
  * As this operation must be transfered via DMA, this still can take a while. In the internet,
  * it says that it can take something between 20 and 100 milliseconds.
+ *
+ * Additional to this, it swaps the offscreen buffer, so that this function does not block
+ * other threads rendering.
  *
  * @param fbnum The framebuffer number of which to flush all buffers
  */
