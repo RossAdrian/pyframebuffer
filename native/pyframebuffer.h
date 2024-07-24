@@ -3,6 +3,7 @@
 
 #include <linux/fb.h>
 
+#include <stdatomic.h>
 #include <stdint.h>
 
 // decorators for marking functions and variables
@@ -26,6 +27,42 @@
 #endif
 
 /**
+ * Typedefinition for a synchronization lock. Used for locking in a
+ * multithreaded context.
+ *
+ * The general usage is:
+ * \code{.c}
+ * // initialization
+ * lock_t sync_lock = LOCK_UNLOCKED;
+ *
+ * // locking
+ * lock(sync_lock);
+ *
+ * // do here something were only one thread can exit at a time
+ * ...
+ *
+ * // unlock the lock for the next thread
+ * unlock(sync_lock);
+ */
+typedef atomic_flag lock_t;
+
+/**
+ * Locks a lock.
+ *
+ * For more information see lock_t.
+ */
+#define lock(x) \
+        while(atomic_flag_test_and_set(&x))
+
+/**
+ * Unlocks a lock.
+ *
+ * For more information see lock_t.
+ */
+#define unlock(x) \
+        atomic_flag_clear(&x)
+
+/**
  * The maximum amount of framebuffers that this library can handle.
  * Normally as the device file @c /dev/fbXX can have a number between
  * @c 0-31 , this means that @c 32 framebuffers can be handled, and
@@ -40,12 +77,12 @@ struct pyfb_videomode_info {
     /**
      * The screeninfo from the framebuffer.
      */
-    const struct fb_var_screeninfo vinfo;
+    struct fb_var_screeninfo vinfo;
 
     /**
      * The size of the framebuffer in bytes.
      */
-    const unsigned long int fb_size_b;
+    unsigned long int fb_size_b;
 };
 
 /**
@@ -89,7 +126,7 @@ struct pyfb_framebuffer {
      *
      * \endcode
      */
-    enum used_buffer {
+    enum {
         
         /**
          * Set if the first buffer is in use.
@@ -100,12 +137,22 @@ struct pyfb_framebuffer {
          * Set if the second buffer is in use.
          */
         BUFFER_USED_1 = 1
-    };
+    } used_buffer;
 
     /**
      * The filedescriptor to the target framebuffer.
      */
     int fb_fd;
+
+    /**
+     * The count of users of this framebuffer.
+     */
+    unsigned long int users;
+
+    /**
+     * The lock on this framebuffer.
+     */
+    lock_t fb_lock;
 };
 
 /**
@@ -132,7 +179,7 @@ struct pyfb_color {
     /**
      * The color format used. 
      */
-    enum format {
+    enum {
         
         /**
          * Indicates that the color format is 16bit.
@@ -143,8 +190,15 @@ struct pyfb_color {
          * Indicates that the color format is 32bit.
          */
         COLOR_FORMAT_U32
-    };
+    } format;
 };
+
+/**
+ * Initializes the pyfb internal structures. This function is only callen
+ * at the beginning of module initialization and should not be callen
+ * at another way.
+ */
+extern void __APISTATUS_internal pyfb_init(void);
 
 /**
  * Opens a framebuffer. If it is allready opened, the implementation will remember
@@ -154,7 +208,7 @@ struct pyfb_color {
  *
  * @param fbnum The framebuffer number to open, usually a number between 0 and 31
  *
- * @return By success 0, else -1
+ * @return By success 0, else -1, -2 if invalid framebuffer number
  */
 extern int pyfb_open(uint8_t fbnum);
 
