@@ -234,15 +234,6 @@ extern void pyfb_close(uint8_t fbnum);
 extern void pyfb_vinfo(uint8_t fbnum, struct pyfb_videomode_info* info_ptr);
 
 /**
- * Checks if the framebuffer number is opened.
- *
- * @param fbnum The framebuffer number to check
- *
- * @return If opened returns 0, else -1
- */
-extern int pyfb_isopen(uint8_t fbnum);
-
-/**
  * Paints a single pixel to the framebuffer. This function is secure because before
  * painting, it validates the arguments.
  *
