@@ -217,3 +217,16 @@ void pyfb_close(uint8_t fbnum) {
     // can return now
     unlock(framebuffers[fbnum].fb_lock);
 }
+
+void pyfb_vinfo(uint8_t fbnum, struct pyfb_videomode_info* info_ptr) {
+    // first test if this device number is valid.
+    if(fbnum >= MAX_FRAMEBUFFERS) {
+        return;
+    }
+
+    lock(framebuffers[fbnum].fb_lock);
+
+    memcpy(info_ptr, &framebuffers[fbnum].fb_info.vinfo, sizeof(struct fb_var_screeninfo));
+
+    unlock(framebuffers[fbnum].fb_lock);
+}
