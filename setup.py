@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, Extension
 import platform
 
 
@@ -10,6 +10,19 @@ def check_platform():
 
 check_platform()
 
+sources = [
+    "framebuffers.c",
+    "module_pyfb.c"
+]
+
+# Add prefix
+src_prefix = "native/"
+src = []
+
+for i in sources:
+    src.append(src_prefix + i)
+
+
 setup(name="pyframebuffer",
       version="1.0",
       author="Adrian Roß",
@@ -20,4 +33,5 @@ setup(name="pyframebuffer",
       long_description="A linux library written in C and Python to draw with graphic primitives to the framebuffer.",
       maintainer="Adrian Roß",
       maintainer_email="adrian.ross@ross-agentur.de",
-      url="https://github.com/RossAdrian/pyframebuffer")
+      url="https://github.com/RossAdrian/pyframebuffer",
+      ext_modules=[Extension("_pyfb", src)])
