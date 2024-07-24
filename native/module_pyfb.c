@@ -17,7 +17,7 @@
  */
 static PyObject* pyfunc_pyfb_open(PyObject* self, PyObject* args) {
     unsigned char fbnum_c = 0;
-    if(!PyArg_ParseTuple(args, "b", &fbnum)) {
+    if(!PyArg_ParseTuple(args, "b", &fbnum_c)) {
         PyErr_SetString(PyExc_TypeError, "Expecting arguments of type byte");
         return NULL;
     }
@@ -36,7 +36,7 @@ static PyObject* pyfunc_pyfb_open(PyObject* self, PyObject* args) {
  */
 static PyObject* pyfunc_pyfb_close(PyObject* self, PyObject* args) {
     unsigned char fbnum_c = 0;
-    if(!PyArg_ParseTuple(args, "b", &fbnum)) {
+    if(!PyArg_ParseTuple(args, "b", &fbnum_c)) {
         PyErr_SetString(PyExc_TypeError, "Expecting arguments of type byte");
         return NULL;
     }
