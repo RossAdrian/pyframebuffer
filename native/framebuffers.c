@@ -30,6 +30,24 @@ void pyfb_init(void) {
     }
 }
 
+void __APISTATUS_internal pyfb_fblock(uint8_t fbnum) {
+    // first test if this device number is valid
+    if(fbnum >= MAX_FRAMEBUFFERS) {
+        return;
+    }
+
+    lock(framebuffers[fbnum].fb_lock);
+}
+
+void __APISTATUS_internal pyfb_fbunlock(uint8_t fbnum) {
+    // first test if this device number is valid
+    if(fbnum >= MAX_FRAMEBUFFERS) {
+        return;
+    }
+
+    unlock(framebuffers[fbnum].fb_lock);
+}
+
 /**
  * Set the uint8_t number into the fb device name string buffer.
  *

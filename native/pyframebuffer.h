@@ -251,12 +251,36 @@ extern void pyfb_ssetPixel(uint8_t fbnum, unsigned long int x, unsigned long int
  * invalid. Also note that this function is marked as __APISTATUS_internal. Means
  * this is internal API and sould not be accessible from outside.
  *
+ * This function by itself does not handle the locking of the framebuffer. The caller must
+ * care of locking the framebuffer before calling this function.
+ *
  * @param fbnum The number of the target framebuffer
  * @param x The x coordinate of the pixel
  * @param y The y coordinate of the pixel
  * @param color The color structure
  */
 extern void __APISTATUS_internal pyfb_setPixel(uint8_t fbnum, unsigned long int x, unsigned long y, const struct pyfb_color* color);
+
+/**
+ * Locks a framebuffer. Before using the pyfb_setPixel function, this function must be callen to
+ * lock the framebuffer for synchonized access. Please remember to unlock the framebuffer with the
+ * pyfb_fbunlock function to indicate that the work on this framebuffer is finished and the next
+ * thread can continue working. If not removing the lock, this would end up in a infinite loop for
+ * this thread by the next operation, and others. Please note the __APISTATUS_internal macro with
+ * which this function is marked. This means that this function should not be used outside this
+ * native implementation.
+ *
+ * @param fbnum The number of the framebuffer to lock
+ */
+extern void __APISTATUS_internal pyfb_fblock(uint8_t fbnum);
+
+/**
+ * Unlocks a framebuffer. This function must be callen when the work for a framebuffer is done. It is
+ * used to unlock a framebuffer after it has been locked via the pyfb_fblock function.
+ *
+ * @param fbnum The number of the framebuffer to unlock
+ */
+extern void __APISTATUS_internal pyfb_fbunlock(uint8_t fbnum);
 
 /**
  * Paints a exactly horizontal line. This function is secure because before painting,
@@ -276,6 +300,9 @@ extern void pyfb_sdrawHorizontalLine(uint8_t fbnum, unsigned long int x, unsigne
  * the arguments are correct, because it may cause a memory error if the data is
  * invalid. Also note that this function is marked as __APISTATUS_internal. Means
  * this is internal API and sould not be accessible from outside.
+ *
+ * This function by itself does not handle the locking of the framebuffer. The caller must
+ * care of locking the framebuffer before calling this function.
  *
  * @param fbnum The number of the target framebuffer
  * @param y The row on which to draw the line
