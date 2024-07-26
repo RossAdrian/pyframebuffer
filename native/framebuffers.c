@@ -21,8 +21,7 @@ void pyfb_init(void) {
         framebuffers[i].fb_fd = -1;
         framebuffers[i].users = 0;
         framebuffers[i].fb_info.fb_size_b = 0;
-        framebuffers[i].buffers[0].u32_buffer = NULL;
-        framebuffers[i].buffers[1].u32_buffer = NULL;
+        framebuffers[i].u32_buffer = NULL;
 
         atomic_flag flag = ATOMIC_FLAG_INIT;
 
@@ -101,16 +100,12 @@ int pyfb_open(uint8_t fbnum) {
     unsigned long int fb_size_b = vinfo->yres_virtual * vinfo->xres_virtual * vinfo->bits_per_pixel / 8;
 
     // offscreen buffers
-    void* buffer1 = calloc(fb_size_b, 1);
-    void* buffer2 = calloc(fb_size_b, 1);
+    void* buffer = calloc(fb_size_b, 1);
 
-    if(buffer1 == NULL || buffer2 == NULL) {
+    if(buffer == NULL) {
         // got out of memory for the offscreen buffers
-        if(buffer1 != NULL) {
-            free(buffer1);
-        }
-        if(buffer2 != NULL) {
-            free(buffer2);
+        if(buffer != NULL) {
+            free(buffer);
         }
 
         // free up all other resources for the new buffer
@@ -123,14 +118,11 @@ int pyfb_open(uint8_t fbnum) {
     // if we get here, all is right and the structure can be filled.
     framebuffers[fbnum].users = 1;
     framebuffers[fbnum].fb_fd = fb_fd;
-    framebuffers[fbnum].used_buffer = BUFFER_USED_0;
 
     if(vinfo->bits_per_pixel == 32) {
-        framebuffers[fbnum].buffers[0].u32_buffer = (uint32_t*)buffer1;
-        framebuffers[fbnum].buffers[1].u32_buffer = (uint32_t*)buffer2;
+        framebuffers[fbnum].u32_buffer = (uint32_t*)buffer;
     }else{
-        framebuffers[fbnum].buffers[0].u16_buffer = (uint16_t*)buffer1;
-        framebuffers[fbnum].buffers[1].u16_buffer = (uint16_t*)buffer2;
+        framebuffers[fbnum].u16_buffer = (uint16_t*)buffer;
     }
 
     framebuffers[fbnum].fb_info.fb_size_b = fb_size_b;
@@ -170,26 +162,19 @@ void pyfb_close(uint8_t fbnum) {
         framebuffers[fbnum].fb_fd = -1;
 
         // free all buffers if are active
-        void** buffer1;
-        void** buffer2;
+        void** buffer;
 
         if(framebuffers[fbnum].fb_info.vinfo.bits_per_pixel == 32) {
-            buffer1 = ((void*)&framebuffers[fbnum].buffers[0].u32_buffer);
-            buffer2 = ((void*)&framebuffers[fbnum].buffers[1].u32_buffer);
+            buffer = ((void*)&framebuffers[fbnum].u32_buffer);
         }else{
-            buffer1 = ((void*)&framebuffers[fbnum].buffers[0].u16_buffer);
-            buffer2 = ((void*)&framebuffers[fbnum].buffers[1].u16_buffer);
+            buffer = ((void*)&framebuffers[fbnum].u16_buffer);
         }
 
-        if(*buffer1 != NULL) {
-            free(*buffer1);
-        }
-        if(*buffer2 != NULL) {
-            free(*buffer2);
+        if(*buffer != NULL) {
+            free(*buffer);
         }
 
-        *buffer1 = NULL;
-        *buffer2 = NULL;
+        *buffer = NULL;
 
         // Now invalidate the videomode info
         framebuffers[fbnum].fb_info.fb_size_b = 0;
@@ -203,29 +188,21 @@ void pyfb_close(uint8_t fbnum) {
     // Okay, now handle a real close
     framebuffers[fbnum].users = 0;
     close(framebuffers[fbnum].fb_fd);
-    framebuffers[fbnum].used_buffer = BUFFER_USED_0;
 
     // free the offscreen buffers
-    void** buffer1;
-    void** buffer2;
+    void** buffer;
 
     if(framebuffers[fbnum].fb_info.vinfo.bits_per_pixel == 32) {
-        buffer1 = ((void*)&framebuffers[fbnum].buffers[0].u32_buffer);
-        buffer2 = ((void*)&framebuffers[fbnum].buffers[1].u32_buffer);
+        buffer = ((void*)&framebuffers[fbnum].u32_buffer);
     }else{
-        buffer1 = ((void*)&framebuffers[fbnum].buffers[0].u16_buffer);
-        buffer2 = ((void*)&framebuffers[fbnum].buffers[1].u16_buffer);
+        buffer = ((void*)&framebuffers[fbnum].u16_buffer);
     }
 
-    if(*buffer1 != NULL) {
-        free(*buffer1);
-    }
-    if(*buffer2 != NULL) {
-        free(*buffer2);
+    if(*buffer != NULL) {
+        free(*buffer);
     }
 
-    *buffer1 = NULL;
-    *buffer2 = NULL;
+    *buffer = NULL;
 
     // and clean up the videomode info
     framebuffers[fbnum].fb_info.fb_size_b = 0;

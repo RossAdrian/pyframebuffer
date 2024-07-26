@@ -111,33 +111,7 @@ struct pyfb_framebuffer {
          * Used if the framebuffer depth (color bits) is 32bit.
          */
         uint32_t* u32_buffer;
-    } buffers[2];
-
-    /**
-     * The current framebuffer index. The enum constant can be used directly
-     * to get the index of the buffer to use. For example:
-     *
-     * \code{.c}
-     *
-     * struct pyfb_framebuffer* buffer = XXX();
-     * uint32_t* offscreen_buffer = buffer->buffers[buffer->used_buffer].u32_buffer;
-     *
-     * // render here something with this buffer
-     *
-     * \endcode
-     */
-    enum {
-        
-        /**
-         * Set if the first buffer is in use.
-         */
-        BUFFER_USED_0 = 0,
-
-        /**
-         * Set if the second buffer is in use.
-         */
-        BUFFER_USED_1 = 1
-    } used_buffer;
+    };
 
     /**
      * The filedescriptor to the target framebuffer.
