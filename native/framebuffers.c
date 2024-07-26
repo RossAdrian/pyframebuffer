@@ -188,6 +188,7 @@ void pyfb_close(uint8_t fbnum) {
     // Okay, now handle a real close
     framebuffers[fbnum].users = 0;
     close(framebuffers[fbnum].fb_fd);
+    framebuffers[fbnum].fb_fd = -1;
 
     // free the offscreen buffers
     void** buffer;
@@ -223,5 +224,32 @@ void pyfb_vinfo(uint8_t fbnum, struct pyfb_videomode_info* info_ptr) {
 
     memcpy(info_ptr, &framebuffers[fbnum].fb_info.vinfo, sizeof(struct fb_var_screeninfo));
 
+    unlock(framebuffers[fbnum].fb_lock);
+}
+
+void pyfb_flushBuffer(uint8_t fbnum) {
+    // first test if this device number is valid
+    if(fbnum >= MAX_FRAMEBUFFERS) {
+        return;
+    }
+
+    lock(framebuffers[fbnum].fb_lock);
+
+    // next, test if the device is really in use
+    if(framebuffers[fbnum].fb_fd == -1) {
+        // this framebuffer is not in use, so ignore
+        unlock(framebuffers[fbnum].fb_lock);
+        return;
+    }
+
+    // if we get here, flush the offscreen buffer to the framebuffer
+    lseek(framebuffers[fbnum].fb_fd, 0L, SEEK_SET);
+    if(framebuffers[fbnum].fb_info.vinfo.bits_per_pixel == 32) {
+        write(framebuffers[fbnum].fb_fd, (void*)framebuffers[fbnum].u32_buffer, (size_t)framebuffers[fbnum].fb_info.fb_size_b);
+    }else{
+        write(framebuffers[fbnum].fb_fd, (void*)framebuffers[fbnum].u16_buffer, (size_t)framebuffers[fbnum].fb_info.fb_size_b);
+    }
+
+    // okay, ready flushed
     unlock(framebuffers[fbnum].fb_lock);
 }

@@ -289,9 +289,6 @@ extern void __APISTATUS_internal pyfb_drawHorizontalLine(uint8_t fbnum, unsigned
  * As this operation must be transfered via DMA, this still can take a while. In the internet,
  * it says that it can take something between 20 and 100 milliseconds.
  *
- * Additional to this, it swaps the offscreen buffer, so that this function does not block
- * other threads rendering.
- *
  * @param fbnum The framebuffer number of which to flush all buffers
  */
 extern void pyfb_flushBuffer(uint8_t fbnum);
