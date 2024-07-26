@@ -12,7 +12,8 @@ check_platform()
 
 sources = [
     "framebuffers.c",
-    "module_pyfb.c"
+    "module_pyfb.c",
+    "color.c"
 ]
 
 # Add prefix

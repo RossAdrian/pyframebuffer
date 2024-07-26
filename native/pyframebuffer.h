@@ -133,39 +133,32 @@ struct pyfb_framebuffer {
  * The color structure used as color for a framebuffer.
  */
 struct pyfb_color {
-    
     /**
-     * The union for storing the color data.
+     * Used if the color is in 32bit format.
      */
-    union {
-
-        /**
-         * Used if the color is in 16bit format.
-         */
-        uint16_t u16_color;
-
-        /**
-         * Used if the color is in 32bit format.
-         */
-        uint32_t u32_color;
-    };
+    uint32_t u32_color;
 
     /**
-     * The color format used. 
+     * Used if the color is in 16bit format.
      */
-    enum {
-        
-        /**
-         * Indicates that the color format is 16bit.
-         */
-        COLOR_FORMAT_U16,
-
-        /**
-         * Indicates that the color format is 32bit.
-         */
-        COLOR_FORMAT_U32
-    } format;
+    uint16_t u16_color;
 };
+
+/**
+ * Initializes a color with the 32bit color value.
+ *
+ * @param value The color value in 32 bits
+ * @param cptr The pointer to the color structure
+ */
+extern void pyfb_initcolor_u32(struct pyfb_color* cptr, uint32_t value);
+
+/**
+ * Initializes a color with the 16bit color value.
+ *
+ * @param value The color value in 16 bits
+ * @param cptr The pointer to the color structure
+ */
+extern void pyfb_initcolor_u16(struct pyfb_color* cptr, uint16_t value);
 
 /**
  * Initializes the pyfb internal structures. This function is only callen
