@@ -226,7 +226,7 @@ extern void pyfb_ssetPixel(uint8_t fbnum, unsigned long int x, unsigned long int
  * @param y The y coordinate of the pixel
  * @param color The color structure
  */
-extern void __APISTATUS_internal pyfb_setPixel(uint8_t fbnum, unsigned long int x, unsigned long y, const struct pyfb_color* color);
+extern void __APISTATUS_internal pyfb_setPixel(uint8_t fbnum, unsigned long int x, unsigned long int y, const struct pyfb_color* color);
 
 /**
  * Locks a framebuffer. Before using the pyfb_setPixel function, this function must be callen to
@@ -259,7 +259,7 @@ extern void __APISTATUS_internal pyfb_fbunlock(uint8_t fbnum);
  * @param len The length of the line in pixel, means first pixel is painted on the x argument coordinate
  * @param color The color structure
  */
-extern void pyfb_sdrawHorizontalLine(uint8_t fbnum, unsigned long int x, unsigned long y, unsigned long int len, const struct pyfb_color* color);
+extern void pyfb_sdrawHorizontalLine(uint8_t fbnum, unsigned long int x, unsigned long int y, unsigned long int len, const struct pyfb_color* color);
 
 /**
  * Paints a exactly horizontal line. This function is the insecure way because due to performance

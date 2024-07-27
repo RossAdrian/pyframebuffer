@@ -253,3 +253,77 @@ void pyfb_flushBuffer(uint8_t fbnum) {
     // okay, ready flushed
     unlock(framebuffers[fbnum].fb_lock);
 }
+
+/**
+ * Sets a pixel into a 32 bit framebuffer. Please only call if the pixel format is a
+ * 32 bit rgba buffer.
+ *
+ * Warning: All arguments are unchecked
+ *
+ * @param fbnum The framebuffer number to use
+ * @param x The x coordniate of the pixel
+ * @param y The y coordinate of the pixel
+ * @param color The color structure
+ * @param xres The x resolution
+ */
+static inline void pyfb_pixel32(uint8_t fbnum, unsigned int x, unsigned int y, const struct pyfb_color* color, unsigned int xres) {
+    framebuffers[fbnum].u32_buffer[y * xres + x] = color->u32_color;
+}
+
+/**
+ * Sets a pixel into a 16 bit framebuffer. Please only call if the pixel format is a
+ * 16 bit rgba buffer.
+ *
+ * Warning: All arguments are unchecked
+ *
+ * @param fbnum The framebuffer number to use
+ * @param x The x coordniate of the pixel
+ * @param y The y coordinate of the pixel
+ * @param color The color structure
+ * @param xres The x resolution
+ */
+static inline void pyfb_pixel16(uint8_t fbnum, unsigned long int x, unsigned long int y, const struct pyfb_color* color, unsigned int xres) {
+    framebuffers[fbnum].u16_buffer[y * xres + x] = color->u16_color;
+}
+
+void __APISTATUS_internal pyfb_setPixel(uint8_t fbnum, unsigned long int x, unsigned long int y, const struct pyfb_color* color) {
+    // do
+    unsigned int xres = framebuffers[fbnum].fb_info.vinfo.xres;
+    unsigned int width = framebuffers[fbnum].fb_info.vinfo.bits_per_pixel;
+    if(width == 16) {
+        pyfb_pixel16(fbnum, x, y, color, xres);
+    }else{
+        pyfb_pixel32(fbnum, x, y, color, xres);
+    }
+}
+
+void pyfb_ssetPixel(uint8_t fbnum, unsigned long int x, unsigned long int y, const struct pyfb_color* color) {
+    // first check if fbnum is valid
+    if(fbnum >= MAX_FRAMEBUFFERS) {
+        return;
+    }
+
+    // Is valid, so lock it!
+    lock(framebuffers[fbnum].fb_lock);
+
+    // check if all values are valid
+    unsigned int xres = framebuffers[fbnum].fb_info.vinfo.xres;
+    unsigned int yres = framebuffers[fbnum].fb_info.vinfo.yres;
+
+    if(x >= xres || y >= yres) {
+        // x or y is not valid
+        unlock(framebuffers[fbnum].fb_lock);
+        return;
+    }
+
+    // else all is okay and we can continue
+    unsigned int width = framebuffers[fbnum].fb_info.vinfo.bits_per_pixel;
+    if(width == 16) {
+        pyfb_pixel16(fbnum, x, y, color, xres);
+    }else{
+        pyfb_pixel32(fbnum, x, y, color, xres);
+    }
+
+    // ready, so return
+    unlock(framebuffers[fbnum].fb_lock);
+}
