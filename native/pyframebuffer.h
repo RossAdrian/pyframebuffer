@@ -2,7 +2,6 @@
 #define _pyframebuffer_included
 
 #include <linux/fb.h>
-
 #include <stdatomic.h>
 #include <stdint.h>
 
@@ -22,7 +21,8 @@
 #if defined(__GNUC__) && !defined(__DOXYGEN__)
 
 #undef __APISTATUS_deprecated
-#define __APISTATUS_deprecated __attribute__((deprecated("This function is deprecated and will be removed in a future version.")))
+#define __APISTATUS_deprecated \
+    __attribute__((deprecated("This function is deprecated and will be removed in a future version.")))
 
 #endif
 
@@ -51,16 +51,14 @@ typedef atomic_flag lock_t;
  *
  * For more information see lock_t.
  */
-#define lock(x) \
-        while(atomic_flag_test_and_set(&x))
+#define lock(x) while(atomic_flag_test_and_set(&x))
 
 /**
  * Unlocks a lock.
  *
  * For more information see lock_t.
  */
-#define unlock(x) \
-        atomic_flag_clear(&x)
+#define unlock(x) atomic_flag_clear(&x)
 
 /**
  * The maximum amount of framebuffers that this library can handle.
@@ -89,7 +87,7 @@ struct pyfb_videomode_info {
  * Used for store framebuffer information internally.
  */
 struct pyfb_framebuffer {
-    
+
     /**
      * The framebuffer information.
      */
@@ -226,7 +224,10 @@ extern void pyfb_ssetPixel(uint8_t fbnum, unsigned long int x, unsigned long int
  * @param y The y coordinate of the pixel
  * @param color The color structure
  */
-extern void __APISTATUS_internal pyfb_setPixel(uint8_t fbnum, unsigned long int x, unsigned long int y, const struct pyfb_color* color);
+extern void __APISTATUS_internal pyfb_setPixel(uint8_t fbnum,
+                                               unsigned long int x,
+                                               unsigned long int y,
+                                               const struct pyfb_color* color);
 
 /**
  * Locks a framebuffer. Before using the pyfb_setPixel function, this function must be callen to
@@ -259,7 +260,11 @@ extern void __APISTATUS_internal pyfb_fbunlock(uint8_t fbnum);
  * @param len The length of the line in pixel, means first pixel is painted on the x argument coordinate
  * @param color The color structure
  */
-extern void pyfb_sdrawHorizontalLine(uint8_t fbnum, unsigned long int x, unsigned long int y, unsigned long int len, const struct pyfb_color* color);
+extern void pyfb_sdrawHorizontalLine(uint8_t fbnum,
+                                     unsigned long int x,
+                                     unsigned long int y,
+                                     unsigned long int len,
+                                     const struct pyfb_color* color);
 
 /**
  * Paints a exactly horizontal line. This function is the insecure way because due to performance
@@ -277,7 +282,11 @@ extern void pyfb_sdrawHorizontalLine(uint8_t fbnum, unsigned long int x, unsigne
  * @param len The length of the line in pixel, means first pixel is painted on the x argument coordinate
  * @param color The color structure
  */
-extern void __APISTATUS_internal pyfb_drawHorizontalLine(uint8_t fbnum, unsigned long int x, unsigned long int y, unsigned long int len, const struct pyfb_color* color);
+extern void __APISTATUS_internal pyfb_drawHorizontalLine(uint8_t fbnum,
+                                                         unsigned long int x,
+                                                         unsigned long int y,
+                                                         unsigned long int len,
+                                                         const struct pyfb_color* color);
 
 /**
  * Paints the content of the offscreen buffer to the framebuffer. This function must be callen

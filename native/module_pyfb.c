@@ -2,10 +2,9 @@
  * Python module implementation.
  */
 
-#include <Python.h>
-
 #include "pyframebuffer.h"
 
+#include <Python.h>
 
 /**
  * Python wrapper for the pyfb_open function.
@@ -77,26 +76,21 @@ static PyObject* pyfunc_pyfb_ssetPixel(PyObject* self, PyObject* args) {
     return PyLong_FromLong(exitcode);
 }
 
-
 // The module def
 
 /**
  * The method definitions.
  */
-static PyMethodDef pyfb_methods[] = {
-    {"pyfb_open", pyfunc_pyfb_open, METH_VARARGS, "Framebuffer open function"},
-    {"pyfb_close", pyfunc_pyfb_close, METH_VARARGS, "Framebuffer close function"},
-    {"pyfb_setPixel", pyfunc_pyfb_ssetPixel, METH_VARARGS, "Draw a pixel on the framebuffer"},
-    {NULL, NULL, 0, NULL}
-};
+static PyMethodDef pyfb_methods[] = {{"pyfb_open", pyfunc_pyfb_open, METH_VARARGS, "Framebuffer open function"},
+                                     {"pyfb_close", pyfunc_pyfb_close, METH_VARARGS, "Framebuffer close function"},
+                                     {"pyfb_setPixel", pyfunc_pyfb_ssetPixel, METH_VARARGS, "Draw a pixel on the framebuffer"},
+                                     {NULL, NULL, 0, NULL}};
 
-static struct PyModuleDef module__pyfb = {
-    PyModuleDef_HEAD_INIT,
-    "_pyfb",
-    "Native interface for the pyframebuffer C sources",
-    -1,
-    pyfb_methods
-};
+static struct PyModuleDef module__pyfb = {PyModuleDef_HEAD_INIT,
+                                          "_pyfb",
+                                          "Native interface for the pyframebuffer C sources",
+                                          -1,
+                                          pyfb_methods};
 
 /**
  * Module init function.

@@ -1,27 +1,24 @@
-#include <sys/ioctl.h>
-#include <linux/fb.h>
-
-#include <unistd.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <fcntl.h>
-
 #include "pyframebuffer.h"
 
+#include <fcntl.h>
+#include <linux/fb.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/ioctl.h>
+#include <unistd.h>
 
 /**
  * The array with the framebuffers.
  */
 static struct pyfb_framebuffer framebuffers[MAX_FRAMEBUFFERS];
 
-
 void pyfb_init(void) {
     for(int i = 0; i < MAX_FRAMEBUFFERS; i++) {
-        framebuffers[i].fb_fd = -1;
-        framebuffers[i].users = 0;
+        framebuffers[i].fb_fd             = -1;
+        framebuffers[i].users             = 0;
         framebuffers[i].fb_info.fb_size_b = 0;
-        framebuffers[i].u32_buffer = NULL;
+        framebuffers[i].u32_buffer        = NULL;
 
         atomic_flag flag = ATOMIC_FLAG_INIT;
 
@@ -121,7 +118,7 @@ int pyfb_open(uint8_t fbnum) {
 
     if(vinfo->bits_per_pixel == 32) {
         framebuffers[fbnum].u32_buffer = (uint32_t*)buffer;
-    }else{
+    } else {
         framebuffers[fbnum].u16_buffer = (uint16_t*)buffer;
     }
 
@@ -152,8 +149,9 @@ void pyfb_close(uint8_t fbnum) {
     // for wrong usage of this library
     if(framebuffers[fbnum].users == 0) {
         // should never happen, but if we get here, clean all up to not break internals
-        printf("WARNING: Detected internal mismatch of libaray usage.\nPlease check your program or report if is a bug from our side.\n");
-        
+        printf("WARNING: Detected internal mismatch of libaray usage.\nPlease check your program or report if is a bug from "
+               "our side.\n");
+
         // close file descriptor if is still opened
         if(framebuffers[fbnum].fb_fd >= 0) {
             close(framebuffers[fbnum].fb_fd);
@@ -166,7 +164,7 @@ void pyfb_close(uint8_t fbnum) {
 
         if(framebuffers[fbnum].fb_info.vinfo.bits_per_pixel == 32) {
             buffer = ((void*)&framebuffers[fbnum].u32_buffer);
-        }else{
+        } else {
             buffer = ((void*)&framebuffers[fbnum].u16_buffer);
         }
 
@@ -195,7 +193,7 @@ void pyfb_close(uint8_t fbnum) {
 
     if(framebuffers[fbnum].fb_info.vinfo.bits_per_pixel == 32) {
         buffer = ((void*)&framebuffers[fbnum].u32_buffer);
-    }else{
+    } else {
         buffer = ((void*)&framebuffers[fbnum].u16_buffer);
     }
 
@@ -246,7 +244,7 @@ void pyfb_flushBuffer(uint8_t fbnum) {
     lseek(framebuffers[fbnum].fb_fd, 0L, SEEK_SET);
     if(framebuffers[fbnum].fb_info.vinfo.bits_per_pixel == 32) {
         write(framebuffers[fbnum].fb_fd, (void*)framebuffers[fbnum].u32_buffer, (size_t)framebuffers[fbnum].fb_info.fb_size_b);
-    }else{
+    } else {
         write(framebuffers[fbnum].fb_fd, (void*)framebuffers[fbnum].u16_buffer, (size_t)framebuffers[fbnum].fb_info.fb_size_b);
     }
 
@@ -266,7 +264,11 @@ void pyfb_flushBuffer(uint8_t fbnum) {
  * @param color The color structure
  * @param xres The x resolution
  */
-static inline void pyfb_pixel32(uint8_t fbnum, unsigned int x, unsigned int y, const struct pyfb_color* color, unsigned int xres) {
+static inline void pyfb_pixel32(uint8_t fbnum,
+                                unsigned int x,
+                                unsigned int y,
+                                const struct pyfb_color* color,
+                                unsigned int xres) {
     framebuffers[fbnum].u32_buffer[y * xres + x] = color->u32_color;
 }
 
@@ -282,17 +284,24 @@ static inline void pyfb_pixel32(uint8_t fbnum, unsigned int x, unsigned int y, c
  * @param color The color structure
  * @param xres The x resolution
  */
-static inline void pyfb_pixel16(uint8_t fbnum, unsigned long int x, unsigned long int y, const struct pyfb_color* color, unsigned int xres) {
+static inline void pyfb_pixel16(uint8_t fbnum,
+                                unsigned long int x,
+                                unsigned long int y,
+                                const struct pyfb_color* color,
+                                unsigned int xres) {
     framebuffers[fbnum].u16_buffer[y * xres + x] = color->u16_color;
 }
 
-void __APISTATUS_internal pyfb_setPixel(uint8_t fbnum, unsigned long int x, unsigned long int y, const struct pyfb_color* color) {
+void __APISTATUS_internal pyfb_setPixel(uint8_t fbnum,
+                                        unsigned long int x,
+                                        unsigned long int y,
+                                        const struct pyfb_color* color) {
     // do
-    unsigned int xres = framebuffers[fbnum].fb_info.vinfo.xres;
+    unsigned int xres  = framebuffers[fbnum].fb_info.vinfo.xres;
     unsigned int width = framebuffers[fbnum].fb_info.vinfo.bits_per_pixel;
     if(width == 16) {
         pyfb_pixel16(fbnum, x, y, color, xres);
-    }else{
+    } else {
         pyfb_pixel32(fbnum, x, y, color, xres);
     }
 }
@@ -320,10 +329,22 @@ void pyfb_ssetPixel(uint8_t fbnum, unsigned long int x, unsigned long int y, con
     unsigned int width = framebuffers[fbnum].fb_info.vinfo.bits_per_pixel;
     if(width == 16) {
         pyfb_pixel16(fbnum, x, y, color, xres);
-    }else{
+    } else {
         pyfb_pixel32(fbnum, x, y, color, xres);
     }
 
     // ready, so return
     unlock(framebuffers[fbnum].fb_lock);
+}
+
+void __APISTATUS_internal pyfb_drawHorizontalLine(uint8_t fbnum,
+                                                  unsigned long int x,
+                                                  unsigned long int y,
+                                                  unsigned long int len,
+                                                  const struct pyfb_color* color) {
+    unsigned long int x1 = x + len - 1;
+
+    for(int ix = 0; ix < len; ix++) {
+        pyfb_setPixel(fbnum, ix, y, color);
+    }
 }

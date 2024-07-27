@@ -1,6 +1,5 @@
 #include "pyframebuffer.h"
 
-
 void pyfb_initcolor_u32(struct pyfb_color* cptr, uint32_t value) {
     uint32_t u32_color = value;
     uint16_t u16_color;
@@ -22,12 +21,12 @@ void pyfb_initcolor_u16(struct pyfb_color* cptr, uint16_t value) {
     uint16_t u16_color = value;
 
     // initialize the 32 bit color
-    unsigned long r = (value & 0xF800) >11;
-    unsigned long g = (value & 0x07E0) >5;
+    unsigned long r = (value & 0xF800) > 11;
+    unsigned long g = (value & 0x07E0) > 5;
     unsigned long b = (value & 0x001F);
-    r = r * 255 / 31;
-    g = g * 255 / 63;
-    b = b * 255 / 31;
+    r               = r * 255 / 31;
+    g               = g * 255 / 63;
+    b               = b * 255 / 31;
 
     u32_color = (uint32_t)((r << 16) | (g << 8) | b);
 
