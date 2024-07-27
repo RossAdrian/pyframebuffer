@@ -14,5 +14,6 @@
                 "ms-vscode.cpptools"
             ]
         }
-    }
+    },
+    "postCreateCommand": "git config --global --add safe.directory /workspace"
 }
