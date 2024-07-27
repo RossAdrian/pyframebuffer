@@ -289,6 +289,44 @@ extern void __APISTATUS_internal pyfb_drawHorizontalLine(uint8_t fbnum,
                                                          const struct pyfb_color* color);
 
 /**
+ * Paints a exactly vertical line. This function is secure because before painting,
+ * it validates the arguments.
+ *
+ * @param fbnum The number of the target framebuffer
+ * @param y The starting y coordinate (included)
+ * @param x The column on which to draw the line
+ * @param len The length of the line in pixel, means first pixel is painted on the y argument coordinate
+ * @param color The color structure
+ */
+extern void pyfb_sdrawVerticalLine(uint8_t fbnum,
+                                   unsigned long int x,
+                                   unsigned long int y,
+                                   unsigned long int len,
+                                   const struct pyfb_color* color);
+
+/**
+ * Paints a exactly vertical line. This function is the insecure way because due to performance
+ * increase, the arguments will not be checked. Please make sure
+ * the arguments are correct, because it may cause a memory error if the data is
+ * invalid. Also note that this function is marked as __APISTATUS_internal. Means
+ * this is internal API and sould not be accessible from outside.
+ *
+ * This function by itself does not handle the locking of the framebuffer. The caller must
+ * care of locking the framebuffer before calling this function.
+ *
+ * @param fbnum The number of the target framebuffer
+ * @param y The starting y coordinate (included)
+ * @param x The column on which to draw the line
+ * @param len The length of the line in pixel, means first pixel is painted on the y argument coordinate
+ * @param color The color structure
+ */
+extern void __APISTATUS_internal pyfb_drawVerticalLine(uint8_t fbnum,
+                                                       unsigned long int x,
+                                                       unsigned long int y,
+                                                       unsigned long int len,
+                                                       const struct pyfb_color* color);
+
+/**
  * Paints the content of the offscreen buffer to the framebuffer. This function must be callen
  * because this is the only operation that is required to paint the content of the offscreen
  * buffer to the framebuffer. All other paint operations are only for painting to the offscreen
