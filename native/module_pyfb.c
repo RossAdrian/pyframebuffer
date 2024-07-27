@@ -70,7 +70,7 @@ static PyObject* pyfunc_pyfb_ssetPixel(PyObject* self, PyObject* args) {
     pyfb_initcolor_u32(&color, color_val);
 
     // And invoke the target function
-    pyfb_ssetPixel(fbnum, x, y, &color);
+    pyfb_ssetPixel(fbnum_c, x, y, &color);
 
     // ready
     int exitcode = 0;
@@ -86,7 +86,7 @@ static PyObject* pyfunc_pyfb_ssetPixel(PyObject* self, PyObject* args) {
 static PyMethodDef pyfb_methods[] = {
     {"pyfb_open", pyfunc_pyfb_open, METH_VARARGS, "Framebuffer open function"},
     {"pyfb_close", pyfunc_pyfb_close, METH_VARARGS, "Framebuffer close function"},
-    {"pyfb_setPixel", pyfunc_pyfb_ssetPixel, METH_VARARGS, "Draw a pixel on the framebuffer"}
+    {"pyfb_setPixel", pyfunc_pyfb_ssetPixel, METH_VARARGS, "Draw a pixel on the framebuffer"},
     {NULL, NULL, 0, NULL}
 };
 
