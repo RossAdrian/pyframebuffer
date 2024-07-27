@@ -251,6 +251,29 @@ extern void __APISTATUS_internal pyfb_fblock(uint8_t fbnum);
 extern void __APISTATUS_internal pyfb_fbunlock(uint8_t fbnum);
 
 /**
+ * Checks if the framebuffer is really opened. This is only used internally as checking function before
+ * executing a draw operation to prevent NULL pointer access.
+ * 
+ * The access should work like this:
+ * \code{.c}
+ * if(!pyfb_fbused(fbnum)) {
+ *     // any error handling
+ *     return;
+ * }
+ * 
+ * // if get here, the framebuffer is in use
+ * \endcode
+ * 
+ * Please lock the framebuffer before invoking this function. This ensures that the status request is keept
+ * up to date or is not modified at the same time this function is testing it.
+ * 
+ * @param fbnum The framebuffer number to check
+ * 
+ * @return If is in use 1, else 0
+ */
+extern int __APISTATUS_internal pyfb_fbused(uint8_t fbnum);
+
+/**
  * Paints a exactly horizontal line. This function is secure because before painting,
  * it validates the arguments.
  *

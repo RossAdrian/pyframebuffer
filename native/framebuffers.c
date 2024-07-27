@@ -26,6 +26,15 @@ void pyfb_init(void) {
     }
 }
 
+int __APISTATUS_internal pyfb_fbused(uint8_t fbnum) {
+    if(framebuffers[fbnum].fb_fd == -1) {
+        return 0;
+    }
+
+    // else
+    return 1;
+}
+
 void __APISTATUS_internal pyfb_fblock(uint8_t fbnum) {
     // first test if this device number is valid
     if(fbnum >= MAX_FRAMEBUFFERS) {
@@ -315,6 +324,13 @@ void pyfb_ssetPixel(uint8_t fbnum, unsigned long int x, unsigned long int y, con
     // Is valid, so lock it!
     lock(framebuffers[fbnum].fb_lock);
 
+    // next, test if the device is really in use
+    if(framebuffers[fbnum].fb_fd == -1) {
+        // this framebuffer is not in use, so ignore
+        unlock(framebuffers[fbnum].fb_lock);
+        return;
+    }
+
     // check if all values are valid
     unsigned int xres = framebuffers[fbnum].fb_info.vinfo.xres;
     unsigned int yres = framebuffers[fbnum].fb_info.vinfo.yres;
@@ -362,6 +378,13 @@ void pyfb_sdrawHorizontalLine(uint8_t fbnum,
     // Is valid, so lock it!
     lock(framebuffers[fbnum].fb_lock);
 
+    // next, test if the device is really in use
+    if(framebuffers[fbnum].fb_fd == -1) {
+        // this framebuffer is not in use, so ignore
+        unlock(framebuffers[fbnum].fb_lock);
+        return;
+    }
+
     // Now test if the ranges are okay
     unsigned long int xres = framebuffers[fbnum].fb_info.vinfo.xres;
     unsigned long int yres = framebuffers[fbnum].fb_info.vinfo.yres;
@@ -406,6 +429,13 @@ void pyfb_sdrawVerticalLine(uint8_t fbnum,
 
     // Is valid, so lock it!
     lock(framebuffers[fbnum].fb_lock);
+
+    // next, test if the device is really in use
+    if(framebuffers[fbnum].fb_fd == -1) {
+        // this framebuffer is not in use, so ignore
+        unlock(framebuffers[fbnum].fb_lock);
+        return;
+    }
 
     // Now test if the ranges are okay
     unsigned long int xres = framebuffers[fbnum].fb_info.vinfo.xres;
