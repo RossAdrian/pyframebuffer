@@ -69,7 +69,39 @@ static PyObject* pyfunc_pyfb_ssetPixel(PyObject* self, PyObject* args) {
     pyfb_initcolor_u32(&color, color_val);
 
     // And invoke the target function
-    pyfb_ssetPixel(fbnum_c, x, y, &color);
+    pyfb_ssetPixel((uint8_t)fbnum_c, x, y, &color);
+
+    // ready
+    int exitcode = 0;
+    return PyLong_FromLong(exitcode);
+}
+
+/**
+ * Python wrapper for the pyfb_sdrawHorizontalLine function.
+ * 
+ * @param self The function
+ * @param args The arguments, expecting long of the fbnum, long of the x coordinate, long of the y coordinate, long of the len coordinate and long for the color
+ * 
+ * @return Just a 0
+ */
+static PyObject* pyfunc_pyfb_sdrawHorizontalLine(PyObject* self, PyObject* args) {
+    unsigned char fbnum_c;
+    unsigned long int x;
+    unsigned long int y;
+    unsigned long int len;
+    uint32_t color_val;
+
+    if(!PyArg_ParseTuple(args, "bkkkI", &fbnum_c, &x, &y, &len, &color_val)) {
+        PyErr_SetString(PyExc_TypeError, "Expecting arguments of type (byte, long, long, long, long)");
+        return NULL;
+    }
+
+    // now parse the color
+    struct pyfb_color color;
+    pyfb_initcolor_u32(&color, color_val);
+
+    // And invoke the target function
+    pyfb_sdrawHorizontalLine((uint8_t)fbnum_c, x, y, len, &color);
 
     // ready
     int exitcode = 0;
@@ -81,10 +113,12 @@ static PyObject* pyfunc_pyfb_ssetPixel(PyObject* self, PyObject* args) {
 /**
  * The method definitions.
  */
-static PyMethodDef pyfb_methods[] = {{"pyfb_open", pyfunc_pyfb_open, METH_VARARGS, "Framebuffer open function"},
-                                     {"pyfb_close", pyfunc_pyfb_close, METH_VARARGS, "Framebuffer close function"},
-                                     {"pyfb_setPixel", pyfunc_pyfb_ssetPixel, METH_VARARGS, "Draw a pixel on the framebuffer"},
-                                     {NULL, NULL, 0, NULL}};
+static PyMethodDef pyfb_methods[] = {
+    {"pyfb_open", pyfunc_pyfb_open, METH_VARARGS, "Framebuffer open function"},
+    {"pyfb_close", pyfunc_pyfb_close, METH_VARARGS, "Framebuffer close function"},
+    {"pyfb_setPixel", pyfunc_pyfb_ssetPixel, METH_VARARGS, "Draw a pixel on the framebuffer"},
+    {"pyfb_drawHorizontalLine", pyfunc_pyfb_sdrawHorizontalLine, METH_VARARGS, "Draw a horizontal line on the framebuffer"},
+    {NULL, NULL, 0, NULL}};
 
 static struct PyModuleDef module__pyfb = {PyModuleDef_HEAD_INIT,
                                           "_pyfb",

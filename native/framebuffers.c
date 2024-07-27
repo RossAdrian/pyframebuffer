@@ -348,3 +348,36 @@ void __APISTATUS_internal pyfb_drawHorizontalLine(uint8_t fbnum,
         pyfb_setPixel(fbnum, ix, y, color);
     }
 }
+
+void pyfb_sdrawHorizontalLine(uint8_t fbnum,
+                              unsigned long int x,
+                              unsigned long int y,
+                              unsigned long int len,
+                              const struct pyfb_color* color) {
+    // first check if fbnum and len are valid
+    if(fbnum >= MAX_FRAMEBUFFERS || len == 0) {
+        return;
+    }
+
+    // Is valid, so lock it!
+    lock(framebuffers[fbnum].fb_lock);
+
+    // Now test if the ranges are okay
+    unsigned long int xres = framebuffers[fbnum].fb_info.vinfo.xres;
+    unsigned long int yres = framebuffers[fbnum].fb_info.vinfo.yres;
+    if(y >= yres) {
+        unlock(framebuffers[fbnum].fb_lock);
+        return;
+    }
+
+    if(x >= xres || (x + len - 1) >= xres) {
+        unlock(framebuffers[fbnum].fb_lock);
+        return;
+    }
+
+    // all data is valid, so proceed
+    pyfb_drawHorizontalLine(fbnum, x, y, len, color);
+
+    // ok, ready
+    unlock(framebuffers[fbnum].fb_lock);
+}
