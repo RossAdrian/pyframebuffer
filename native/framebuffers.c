@@ -58,16 +58,6 @@ void __APISTATUS_internal pyfb_fbunlock(uint8_t fbnum) {
     unlock(framebuffers[fbnum].fb_lock);
 }
 
-/**
- * Set the uint8_t number into the fb device name string buffer.
- *
- * @param number The buffer to set the number into
- * @param fbnum The framebuffer number to set into the buffer
- */
-static inline void setNum(char* number, uint8_t fbnum) {
-    snprintf(number, 4, "%hhu", fbnum);
-}
-
 int pyfb_open(uint8_t fbnum) {
     // first test if this device number is valid.
     if(fbnum >= MAX_FRAMEBUFFERS) {
@@ -88,8 +78,8 @@ int pyfb_open(uint8_t fbnum) {
     }
 
     // else if we get here, we must open and initialize the framebuffer structure
-    char* fb_device = "/dev/fb000000";
-    setNum(&fb_device[7], fbnum);
+    char fb_device[14];
+    snprintf(fb_device, 14, "/dev/fb%hhu", fbnum);
 
     // open the framebuffer
     int fb_fd = open(fb_device, O_RDWR);
