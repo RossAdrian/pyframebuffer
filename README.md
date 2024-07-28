@@ -1,5 +1,7 @@
 # pyframebuffer
 
+[![Python package](https://github.com/RossAdrian/pyframebuffer/actions/workflows/python-package.yml/badge.svg)](https://github.com/RossAdrian/pyframebuffer/actions/workflows/python-package.yml)
+
 > A linux framebuffer primitives library written in C and Python.
 
 The pyframebuffer library is a library written in C and Python to access over a native API the framebuffer device file. It has been developed to support graphics specially on embedded systems, like the *Raspberry Pi 4 Model B*, to remove overhead from *X* or *Wayland*, and making it easy to draw graphics with Python through an abstraced API. Means this library acts as an abstraction layer of the framebuffer device file access in C for an high-level Python API.
