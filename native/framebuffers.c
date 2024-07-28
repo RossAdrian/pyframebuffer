@@ -358,9 +358,9 @@ void __APISTATUS_internal pyfb_drawHorizontalLine(uint8_t fbnum,
                                                   unsigned long int y,
                                                   unsigned long int len,
                                                   const struct pyfb_color* color) {
-    unsigned long int x1 = x + len - 1;
+    unsigned long int x1 = x + len;
 
-    for(unsigned long int ix = 0; ix < len; ix++) {
+    for(unsigned long int ix = x; ix < x1; ix++) {
         pyfb_setPixel(fbnum, ix, y, color);
     }
 }
@@ -410,9 +410,9 @@ void __APISTATUS_internal pyfb_drawVerticalLine(uint8_t fbnum,
                                                 unsigned long int y,
                                                 unsigned long int len,
                                                 const struct pyfb_color* color) {
-    unsigned long int y1 = y + len - 1;
+    unsigned long int y1 = y + len;
 
-    for(unsigned int long iy = 0; iy < len; iy++) {
+    for(unsigned int long iy = y; iy < y1; iy++) {
         pyfb_setPixel(fbnum, x, iy, color);
     }
 }
