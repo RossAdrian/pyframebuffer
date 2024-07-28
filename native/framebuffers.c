@@ -104,7 +104,7 @@ int pyfb_open(uint8_t fbnum) {
     struct fb_var_screeninfo* vinfo = &framebuffers[fbnum].fb_info.vinfo;
     if(ioctl(fb_fd, FBIOGET_VSCREENINFO, vinfo) == -1) {
         // failed to get the vinfo structure
-        PyErr_SetString(PyErr_DisplayException, "Could not read display information. Is it really a framebuffer device file?");
+        PyErr_SetString(PyExc_IOError, "Could not read display information. Is it really a framebuffer device file?");
         unlock(framebuffers[fbnum].fb_lock);
         close(fb_fd);
         return -1;
@@ -164,7 +164,7 @@ void pyfb_close(uint8_t fbnum) {
 
     // for wrong usage of this library
     if(framebuffers[fbnum].users == 0) {
-        PyErr_SetString(PyErr_BadInternalCall, "The framebuffer is allready closed.");
+        PyErr_SetString(PyExc_IOError, "The framebuffer is allready closed.");
         // should never happen, but if we get here, clean all up to not break internals
         printf("WARNING: Detected internal mismatch of libaray usage.\nPlease check your program or report if is a bug from "
                "our side.\n");
