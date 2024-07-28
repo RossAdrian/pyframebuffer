@@ -14,6 +14,13 @@
 static struct pyfb_framebuffer framebuffers[MAX_FRAMEBUFFERS];
 
 void pyfb_init(void) {
+
+    static int allready_init = 0;
+    if(allready_init == 1) {
+        return;
+    }
+    allready_init = 1;
+
     for(int i = 0; i < MAX_FRAMEBUFFERS; i++) {
         framebuffers[i].fb_fd             = -1;
         framebuffers[i].users             = 0;
@@ -64,6 +71,7 @@ static inline void setNum(char* number, uint8_t fbnum) {
 int pyfb_open(uint8_t fbnum) {
     // first test if this device number is valid.
     if(fbnum >= MAX_FRAMEBUFFERS) {
+        PyErr_SetString(PyExc_ValueError, "The framebuffer number is not valid");
         return -2;
     }
 
@@ -87,6 +95,7 @@ int pyfb_open(uint8_t fbnum) {
     int fb_fd = open(fb_device, O_RDWR);
     if(fb_fd == -1) {
         // failed to open the requested device
+        PyErr_SetString(PyExc_ValueError, "Could not open requested framebuffer");
         unlock(framebuffers[fbnum].fb_lock);
         return -1;
     }
@@ -95,6 +104,7 @@ int pyfb_open(uint8_t fbnum) {
     struct fb_var_screeninfo* vinfo = &framebuffers[fbnum].fb_info.vinfo;
     if(ioctl(fb_fd, FBIOGET_VSCREENINFO, vinfo) == -1) {
         // failed to get the vinfo structure
+        PyErr_SetString(PyErr_DisplayException, "Could not read display information. Is it really a framebuffer device file?");
         unlock(framebuffers[fbnum].fb_lock);
         close(fb_fd);
         return -1;
@@ -110,6 +120,7 @@ int pyfb_open(uint8_t fbnum) {
         // got out of memory for the offscreen buffers
 
         // free up all other resources for the new buffer
+        PyErr_SetString(PyExc_MemoryError, "Could not allocate offscreen buffer.");
         close(fb_fd);
         memset((void*)vinfo, 0, sizeof(struct fb_var_screeninfo));
         unlock(framebuffers[fbnum].fb_lock);
@@ -136,6 +147,7 @@ int pyfb_open(uint8_t fbnum) {
 void pyfb_close(uint8_t fbnum) {
     // first test if this device number is valid.
     if(fbnum >= MAX_FRAMEBUFFERS) {
+        PyErr_SetString(PyExc_ValueError, "The framebuffer number is not valid");
         return;
     }
 
@@ -152,6 +164,7 @@ void pyfb_close(uint8_t fbnum) {
 
     // for wrong usage of this library
     if(framebuffers[fbnum].users == 0) {
+        PyErr_SetString(PyErr_BadInternalCall, "The framebuffer is allready closed.");
         // should never happen, but if we get here, clean all up to not break internals
         printf("WARNING: Detected internal mismatch of libaray usage.\nPlease check your program or report if is a bug from "
                "our side.\n");
@@ -232,6 +245,7 @@ void pyfb_vinfo(uint8_t fbnum, struct pyfb_videomode_info* info_ptr) {
 int pyfb_flushBuffer(uint8_t fbnum) {
     // first test if this device number is valid
     if(fbnum >= MAX_FRAMEBUFFERS) {
+        PyErr_SetString(PyExc_ValueError, "The framebuffer number is not valid");
         return -1;
     }
 
@@ -247,6 +261,7 @@ int pyfb_flushBuffer(uint8_t fbnum) {
     // if we get here, flush the offscreen buffer to the framebuffer
     if(lseek(framebuffers[fbnum].fb_fd, 0L, SEEK_SET) == -1) {
         unlock(framebuffers[fbnum].fb_lock);
+        PyErr_SetString(PyExc_IOError, "Could not seek to begin of the framebuffer device file");
         return -1;
     }
 
@@ -322,6 +337,7 @@ void __APISTATUS_internal pyfb_setPixel(uint8_t fbnum,
 void pyfb_ssetPixel(uint8_t fbnum, unsigned long int x, unsigned long int y, const struct pyfb_color* color) {
     // first check if fbnum is valid
     if(fbnum >= MAX_FRAMEBUFFERS) {
+        PyErr_SetString(PyExc_ValueError, "The framebuffer number is not valid");
         return;
     }
 
@@ -331,6 +347,7 @@ void pyfb_ssetPixel(uint8_t fbnum, unsigned long int x, unsigned long int y, con
     // next, test if the device is really in use
     if(framebuffers[fbnum].fb_fd == -1) {
         // this framebuffer is not in use, so ignore
+        PyErr_SetString(PyExc_IOError, "The framebuffer is not opened");
         unlock(framebuffers[fbnum].fb_lock);
         return;
     }
@@ -341,6 +358,7 @@ void pyfb_ssetPixel(uint8_t fbnum, unsigned long int x, unsigned long int y, con
 
     if(x >= xres || y >= yres) {
         // x or y is not valid
+        PyErr_SetString(PyExc_ValueError, "The coordinates are not on the screen");
         unlock(framebuffers[fbnum].fb_lock);
         return;
     }
@@ -376,7 +394,13 @@ void pyfb_sdrawHorizontalLine(uint8_t fbnum,
                               unsigned long int len,
                               const struct pyfb_color* color) {
     // first check if fbnum and len are valid
-    if(fbnum >= MAX_FRAMEBUFFERS || len == 0) {
+    if(fbnum >= MAX_FRAMEBUFFERS) {
+        PyErr_SetString(PyExc_ValueError, "The framebuffer number is not valid");
+        return;
+    }
+
+    if(len == 0) {
+        // ignore, is not displayed
         return;
     }
 
@@ -386,6 +410,7 @@ void pyfb_sdrawHorizontalLine(uint8_t fbnum,
     // next, test if the device is really in use
     if(framebuffers[fbnum].fb_fd == -1) {
         // this framebuffer is not in use, so ignore
+        PyErr_SetString(PyExc_IOError, "The framebuffer is not opened");
         unlock(framebuffers[fbnum].fb_lock);
         return;
     }
@@ -395,11 +420,13 @@ void pyfb_sdrawHorizontalLine(uint8_t fbnum,
     unsigned long int yres = framebuffers[fbnum].fb_info.vinfo.yres;
 
     if(y >= yres) {
+        PyErr_SetString(PyExc_ValueError, "The coordinates are not on the screen");
         unlock(framebuffers[fbnum].fb_lock);
         return;
     }
 
     if(x >= xres || (x + len - 1) >= xres) {
+        PyErr_SetString(PyExc_ValueError, "The coordinates are not on the screen");
         unlock(framebuffers[fbnum].fb_lock);
         return;
     }
@@ -429,7 +456,13 @@ void pyfb_sdrawVerticalLine(uint8_t fbnum,
                             unsigned long int len,
                             const struct pyfb_color* color) {
     // first check if fbnum and len are valid
-    if(fbnum >= MAX_FRAMEBUFFERS || len == 0) {
+    if(fbnum >= MAX_FRAMEBUFFERS) {
+        PyErr_SetString(PyExc_ValueError, "The framebuffer number is not valid");
+        return;
+    }
+
+    if(len == 0) {
+        // ignore, is not displayed
         return;
     }
 
@@ -439,6 +472,7 @@ void pyfb_sdrawVerticalLine(uint8_t fbnum,
     // next, test if the device is really in use
     if(framebuffers[fbnum].fb_fd == -1) {
         // this framebuffer is not in use, so ignore
+        PyErr_SetString(PyExc_IOError, "The framebuffer is not opened");
         unlock(framebuffers[fbnum].fb_lock);
         return;
     }
@@ -448,11 +482,13 @@ void pyfb_sdrawVerticalLine(uint8_t fbnum,
     unsigned long int yres = framebuffers[fbnum].fb_info.vinfo.yres;
 
     if(y >= yres || (y + len - 1) >= yres) {
+        PyErr_SetString(PyExc_ValueError, "The coordinates are not on the screen");
         unlock(framebuffers[fbnum].fb_lock);
         return;
     }
 
     if(x >= xres) {
+        PyErr_SetString(PyExc_ValueError, "The coordinates are not on the screen");
         unlock(framebuffers[fbnum].fb_lock);
         return;
     }

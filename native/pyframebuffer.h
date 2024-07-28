@@ -1,6 +1,7 @@
 #ifndef _pyframebuffer_included
 #define _pyframebuffer_included
 
+#include <Python.h>
 #include <linux/fb.h>
 #include <stdatomic.h>
 #include <stdint.h>

@@ -4,8 +4,6 @@
 
 #include "pyframebuffer.h"
 
-#include <Python.h>
-
 /**
  * Python wrapper for the pyfb_open function.
  *
@@ -191,6 +189,7 @@ static struct PyModuleDef module__pyfb = {PyModuleDef_HEAD_INIT,
  */
 PyMODINIT_FUNC PyInit__pyfb(void) {
     PyObject* module = PyModule_Create(&module__pyfb);
+    pyfb_init();
 
     // Add the MAX_FRAMEBUFFERS macro to the constants
     PyModule_AddIntMacro(module, MAX_FRAMEBUFFERS);
