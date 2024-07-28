@@ -19,10 +19,8 @@ void pyfb_init(void) {
         framebuffers[i].users             = 0;
         framebuffers[i].fb_info.fb_size_b = 0;
         framebuffers[i].u32_buffer        = NULL;
-
-        atomic_flag flag = ATOMIC_FLAG_INIT;
-
-        framebuffers[i].fb_lock = flag;
+        atomic_flag flag                  = ATOMIC_FLAG_INIT;
+        framebuffers[i].fb_lock           = flag;
     }
 }
 
@@ -110,9 +108,6 @@ int pyfb_open(uint8_t fbnum) {
 
     if(buffer == NULL) {
         // got out of memory for the offscreen buffers
-        if(buffer != NULL) {
-            free(buffer);
-        }
 
         // free up all other resources for the new buffer
         close(fb_fd);
@@ -234,10 +229,10 @@ void pyfb_vinfo(uint8_t fbnum, struct pyfb_videomode_info* info_ptr) {
     unlock(framebuffers[fbnum].fb_lock);
 }
 
-void pyfb_flushBuffer(uint8_t fbnum) {
+int pyfb_flushBuffer(uint8_t fbnum) {
     // first test if this device number is valid
     if(fbnum >= MAX_FRAMEBUFFERS) {
-        return;
+        return -1;
     }
 
     lock(framebuffers[fbnum].fb_lock);
@@ -246,19 +241,27 @@ void pyfb_flushBuffer(uint8_t fbnum) {
     if(framebuffers[fbnum].fb_fd == -1) {
         // this framebuffer is not in use, so ignore
         unlock(framebuffers[fbnum].fb_lock);
-        return;
+        return -1;
     }
 
     // if we get here, flush the offscreen buffer to the framebuffer
-    lseek(framebuffers[fbnum].fb_fd, 0L, SEEK_SET);
+    if(lseek(framebuffers[fbnum].fb_fd, 0L, SEEK_SET) == -1) {
+        unlock(framebuffers[fbnum].fb_lock);
+        return -1;
+    }
+
+    size_t buf_len             = (size_t)framebuffers[fbnum].fb_info.fb_size_b;
+    unsigned long int exitcode = 0;
+
     if(framebuffers[fbnum].fb_info.vinfo.bits_per_pixel == 32) {
-        write(framebuffers[fbnum].fb_fd, (void*)framebuffers[fbnum].u32_buffer, (size_t)framebuffers[fbnum].fb_info.fb_size_b);
+        exitcode = (unsigned int)write(framebuffers[fbnum].fb_fd, (void*)framebuffers[fbnum].u32_buffer, buf_len);
     } else {
-        write(framebuffers[fbnum].fb_fd, (void*)framebuffers[fbnum].u16_buffer, (size_t)framebuffers[fbnum].fb_info.fb_size_b);
+        exitcode = (unsigned int)write(framebuffers[fbnum].fb_fd, (void*)framebuffers[fbnum].u16_buffer, buf_len);
     }
 
     // okay, ready flushed
     unlock(framebuffers[fbnum].fb_lock);
+    return buf_len == exitcode ? 0 : -1;
 }
 
 /**
@@ -308,6 +311,7 @@ void __APISTATUS_internal pyfb_setPixel(uint8_t fbnum,
     // do
     unsigned int xres  = framebuffers[fbnum].fb_info.vinfo.xres;
     unsigned int width = framebuffers[fbnum].fb_info.vinfo.bits_per_pixel;
+
     if(width == 16) {
         pyfb_pixel16(fbnum, x, y, color, xres);
     } else {
@@ -343,6 +347,7 @@ void pyfb_ssetPixel(uint8_t fbnum, unsigned long int x, unsigned long int y, con
 
     // else all is okay and we can continue
     unsigned int width = framebuffers[fbnum].fb_info.vinfo.bits_per_pixel;
+
     if(width == 16) {
         pyfb_pixel16(fbnum, x, y, color, xres);
     } else {
@@ -388,6 +393,7 @@ void pyfb_sdrawHorizontalLine(uint8_t fbnum,
     // Now test if the ranges are okay
     unsigned long int xres = framebuffers[fbnum].fb_info.vinfo.xres;
     unsigned long int yres = framebuffers[fbnum].fb_info.vinfo.yres;
+
     if(y >= yres) {
         unlock(framebuffers[fbnum].fb_lock);
         return;
@@ -440,6 +446,7 @@ void pyfb_sdrawVerticalLine(uint8_t fbnum,
     // Now test if the ranges are okay
     unsigned long int xres = framebuffers[fbnum].fb_info.vinfo.xres;
     unsigned long int yres = framebuffers[fbnum].fb_info.vinfo.yres;
+
     if(y >= yres || (y + len - 1) >= yres) {
         unlock(framebuffers[fbnum].fb_lock);
         return;

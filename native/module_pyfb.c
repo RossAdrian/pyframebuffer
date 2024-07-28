@@ -140,6 +140,27 @@ static PyObject* pyfunc_pyfb_sdrawVerticalLine(PyObject* self, PyObject* args) {
     return PyLong_FromLong(exitcode);
 }
 
+/**
+ * Python wrapper for the pyfb_flushBuffer function.
+ * 
+ * @param self The function
+ * @param args The arguments, expecting long of the fbnum
+ * 
+ * @return The exitstatus
+ */
+static PyObject* pyfunc_pyfb_flushBuffer(PyObject* self, PyObject* args) {
+    unsigned char fbnum_c;
+
+    if(!PyArg_ParseTuple(args, "b", &fbnum_c)) {
+        PyErr_SetString(PyExc_TypeError, "Expecting arguments of type (byte)");
+        return NULL;
+    }
+
+    // Now invoke the function
+    int exitcode = pyfb_flushBuffer((uint8_t)fbnum_c);
+    return PyLong_FromLong(exitcode);
+}
+
 // The module def
 
 /**
@@ -151,6 +172,7 @@ static PyMethodDef pyfb_methods[] = {
     {"pyfb_setPixel", pyfunc_pyfb_ssetPixel, METH_VARARGS, "Draw a pixel on the framebuffer"},
     {"pyfb_drawHorizontalLine", pyfunc_pyfb_sdrawHorizontalLine, METH_VARARGS, "Draw a horizontal line on the framebuffer"},
     {"pyfb_drawVerticalLine", pyfunc_pyfb_sdrawVerticalLine, METH_VARARGS, "Draw a vertical line on the framebuffer"},
+    {"pyfb_flushBuffer", pyfunc_pyfb_flushBuffer, METH_VARARGS, "Flush the offscreen buffer to the framebuffer"},
     {NULL, NULL, 0, NULL}};
 
 static struct PyModuleDef module__pyfb = {PyModuleDef_HEAD_INIT,

@@ -360,7 +360,9 @@ extern void __APISTATUS_internal pyfb_drawVerticalLine(uint8_t fbnum,
  * it says that it can take something between 20 and 100 milliseconds.
  *
  * @param fbnum The framebuffer number of which to flush all buffers
+ *
+ * @return If succeeded 0, else -1
  */
-extern void pyfb_flushBuffer(uint8_t fbnum);
+extern int pyfb_flushBuffer(uint8_t fbnum);
 
 #endif
