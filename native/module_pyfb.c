@@ -159,6 +159,37 @@ static PyObject* pyfunc_pyfb_flushBuffer(PyObject* self, PyObject* args) {
     return PyLong_FromLong(exitcode);
 }
 
+/**
+ * Returns the resolution of the framebuffer.
+ * 
+ * @param self The function
+ * @param args The arguments, expecting long of the fbnum
+ * 
+ * @return A python tuple of (xres, yres, bit-depth)
+ */
+static PyObject* pyfunc_pyfb_getResolution(PyObject* self, PyObject* args) {
+    unsigned char fbnum_c;
+
+    if(!PyArg_ParseTuple(args, "b", &fbnum_c)) {
+        PyErr_SetString(PyExc_TypeError, "Expecting arguments of type (byte)");
+        return NULL;
+    }
+
+    // Else build the tuple of the resolution info and return it
+    struct pyfb_videomode_info vinfo;
+    pyfb_vinfo((uint8_t)fbnum_c, &vinfo);
+
+    // check if valid
+    if(vinfo.fb_size_b == 0) {
+        PyErr_SetString(PyExc_ValueError, "The framebuffer number is not valid");
+        return NULL;
+    }
+
+    // else build the tuple
+    PyObject* tuple = Py_BuildValue("III", vinfo.vinfo.xres, vinfo.vinfo.yres, vinfo.vinfo.bits_per_pixel);
+    return tuple;
+}
+
 // The module def
 
 /**
@@ -171,6 +202,7 @@ static PyMethodDef pyfb_methods[] = {
     {"pyfb_drawHorizontalLine", pyfunc_pyfb_sdrawHorizontalLine, METH_VARARGS, "Draw a horizontal line on the framebuffer"},
     {"pyfb_drawVerticalLine", pyfunc_pyfb_sdrawVerticalLine, METH_VARARGS, "Draw a vertical line on the framebuffer"},
     {"pyfb_flushBuffer", pyfunc_pyfb_flushBuffer, METH_VARARGS, "Flush the offscreen buffer to the framebuffer"},
+    {"pyfb_getResolution", pyfunc_pyfb_getResolution, METH_VARARGS, "Returns a tupel of the framebuffer resolution"},
     {NULL, NULL, 0, NULL}};
 
 static struct PyModuleDef module__pyfb = {PyModuleDef_HEAD_INIT,
