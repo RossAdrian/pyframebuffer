@@ -11,10 +11,10 @@ void pyfb_initcolor_u32(struct pyfb_color* cptr, uint32_t value) {
     unsigned int b = (value & 0x0000FF00);
     u16_color      = (uint16_t)((r >> 3 << 11) + (g >> 2 << 5) + (b >> 3));
 #else
-    unsigned int r = (value & 0x000000FF) << 16;
-    unsigned int g = (value & 0x0000FF00) << 8;
-    unsigned int b = (value & 0x00FF0000);
-    u16_color      = (uint16_t)((r << 3 >> 11) + (g << 2 >> 5) + (b << 3));
+    unsigned int r  = (value & 0x000000FF) << 16;
+    unsigned int g  = (value & 0x0000FF00) << 8;
+    unsigned int b  = (value & 0x00FF0000);
+    u16_color       = (uint16_t)((r << 3 >> 11) + (g << 2 >> 5) + (b << 3));
 #endif
 
     // ready, now init the structure

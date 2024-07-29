@@ -8,6 +8,7 @@
     "git.enabled": true,
     "git.requireGitUserConfig": true,
     "json.format.enable": true,
+    "C_Cpp.clang_format_path": "/usr/bin/clang-format",
     "[json]": {
         "editor.formatOnPaste": false,
         "editor.formatOnSave": false
@@ -19,6 +20,14 @@
         "--show-source"
     ],
     "files.associations": {
-        "pyframebuffer.h": "c"
+        "pyframebuffer.h": "c",
+        "optional": "c",
+        "ostream": "c",
+        "system_error": "c",
+        "array": "c",
+        "functional": "c",
+        "tuple": "c",
+        "type_traits": "c",
+        "utility": "c"
     }
 }
