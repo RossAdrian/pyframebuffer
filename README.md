@@ -25,3 +25,11 @@ to be able to build and install this package. Recommended is the installation on
 console like *Raspberry Pi OS lite* or *Ubuntu Server* to see the graphics output on the screen. Full screen display without
 noisy framebuffer console output is best with running a python script with the draw operations and sleep the amount of seconds
 required to see the magic of the graphics output.
+
+## Contributing
+
+See [Contributing Page](./CONTRIBUTING.md) for guidelines and development environment setup.
+
+## License
+
+MIT © [Adrian Roß](https://github.com/RossAdrian)
