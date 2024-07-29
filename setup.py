@@ -36,4 +36,5 @@ setup(name="pyframebuffer",
       maintainer="Adrian Roß",
       maintainer_email="adrian.ross@ross-agentur.de",
       url="https://github.com/RossAdrian/pyframebuffer",
+      packages=["pyframebuffer"],
       ext_modules=[Extension("_pyfb", src)])
