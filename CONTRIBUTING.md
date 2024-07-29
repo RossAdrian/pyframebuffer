@@ -1,6 +1,7 @@
 # Contributing to pyframebuffer
 
 **Thank you for contributing to pyframebuffer!**
+
 **All little pieces of contributions are welcome!**
 
 Please follow the following guidelines to contribute to our project:
@@ -9,8 +10,8 @@ Please follow the following guidelines to contribute to our project:
 
 For development, I use [Visual Studio Code](https://code.visualstudio.com). Clone this project and
 open it in vscode as workspace root. Make sure you have installed the *Vscode Dev Containers Extension*.
-If installed, you get a notification reopen this project in a container. If doing so, you'll get a
-preconfigured development environment with all required vscode extensions and automatic code formattors
+If installed, you get a notification to reopen this project in a container. If doing so, you'll get a
+preconfigured development environment with all required vscode extensions and automatic code formatters
 based on the projects coding style.
 
 ## Coding conventions
@@ -20,7 +21,7 @@ based on the projects coding style.
 If opened up with the projects vscode Dev Container, you must not care of code formatting. All is done
 automaticly by saving!
 
-If your not able to use it, you can run the following commands to format the code:
+If you're not able to use it, you can run the following commands to format the code:
 
 **For the C sources:**
 
@@ -41,7 +42,7 @@ flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
 flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 ```
 
-This shows formatting violations in the Python source code of the project. You self must then fix the warnings and errors.
+This shows formatting violations in the Python source code of the project. You self must fix the warnings and errors.
 
 ### Naming conventions
 
