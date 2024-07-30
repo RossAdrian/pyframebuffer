@@ -50,6 +50,3 @@ jobs:
     - name: Test install with setuptools
       run: |
         python setup.py install
-    - name: Test build doxygen documentations
-      run: |
-        doxygen

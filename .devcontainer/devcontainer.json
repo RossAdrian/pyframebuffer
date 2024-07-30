@@ -15,5 +15,5 @@
             ]
         }
     },
-    "postStartCommand": "git config --global --add safe.directory /workspace"
+    "postStartCommand": "git config --global --add safe.directory /workspace/pyframebuffer"
 }

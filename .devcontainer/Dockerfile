@@ -5,4 +5,5 @@ RUN apt-get clean
 RUN apt-get update -o Acquire::CompressionTypes::Order::=gz
 RUN export DEBIAN_FRONTEND=noninteractive
 RUN apt-get install -y --fix-missing git gcc clang clang-format
+RUN apt-get install -y --fix-missing doxygen
 RUN pip install flake8
