@@ -84,6 +84,9 @@ void __APISTATUS_internal pyfb_sdrawLine(uint8_t fbnum,
         return;
     }
 
+    struct pyfb_videomode_info vinfo;
+    pyfb_vinfo(fbnum, &vinfo);
+
     // Ok, then lock
     pyfb_fblock(fbnum);
 
@@ -96,9 +99,6 @@ void __APISTATUS_internal pyfb_sdrawLine(uint8_t fbnum,
     }
 
     // check if all values are valid
-    struct pyfb_videomode_info vinfo;
-    pyfb_vinfo(fbnum, &vinfo);
-
     unsigned long int xres = vinfo.vinfo.xres;
     unsigned long int yres = vinfo.vinfo.yres;
 
