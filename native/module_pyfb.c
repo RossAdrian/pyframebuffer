@@ -217,6 +217,10 @@ static PyObject* pyfunc_pyfb_sdrawLine(PyObject* self, PyObject* args) {
 
     // and invoke the target function
     pyfb_sdrawLine((uint8_t)fbnum_c, x1, y1, x2, y2, &color);
+
+    // and return just 0
+    int exitcode = 0;
+    return PyLong_FromLong(exitcode);
 }
 
 // The module def
