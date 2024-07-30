@@ -3,7 +3,7 @@ Core Python sources of the pyframebuffer module.
 """
 from pyframebuffer.color import getColorValue
 
-import _fb as fb  # type: ignore
+import _pyfb as fb  # type: ignore
 
 __all__ = ["openfb", "MAX_FRAMEBUFFERS"]
 MAX_FRAMEBUFFERS = fb.MAX_FRAMEBUFFERS
