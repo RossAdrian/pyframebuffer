@@ -1,3 +1,6 @@
+/**
+ * Main header of the native sources.
+ */
 #ifndef _pyframebuffer_included
 #define _pyframebuffer_included
 
@@ -314,7 +317,7 @@ extern void __APISTATUS_internal pyfb_drawHorizontalLine(uint8_t fbnum,
                                                          const struct pyfb_color* color);
 
 /**
- * Paints a exactly vertical line. This function is secure because before painting,
+ * Paints a exactly vertical line. This function is secure, because before painting,
  * it validates the arguments.
  *
  * @param fbnum The number of the target framebuffer
@@ -350,6 +353,48 @@ extern void __APISTATUS_internal pyfb_drawVerticalLine(uint8_t fbnum,
                                                        unsigned long int y,
                                                        unsigned long int len,
                                                        const struct pyfb_color* color);
+
+/**
+ * Draws a line from one Point to another. This function is the insecure way because due to
+ * performance increase, the arguments will not be checked. Please make sure the arguments
+ * are correct, because it may cause a memory error if the data is invalid. Also note that this
+ * function is marked as __APISTATUS_internal. Means this is an internal API and should not be
+ * accessible from outside.
+ * 
+ * This function by it self does not handle the locking of the framebuffer. The caller must
+ * care of locking the framebuffer before calling this function.
+ * 
+ * @param fbnum The number of the framebuffer
+ * @param x1 The x1 coordinate
+ * @param y1 The y1 coordinate
+ * @param x2 The x2 coordinate
+ * @param y2 The y2 coordinate
+ * @param color The color value
+ */
+extern void __APISTATUS_internal pyfb_drawLine(uint8_t fbnum,
+                                               unsigned long int x1,
+                                               unsigned long int y1,
+                                               unsigned long int x2,
+                                               unsigned long int y2,
+                                               const struct pyfb_color* color);
+
+/**
+ * Draws a line. This function is secure, because before painting,
+ * it validates the arguments.
+ *
+ * @param fbnum The number of the framebuffer
+ * @param x1 The x1 coordinate
+ * @param y1 The y1 coordinate
+ * @param x2 The x2 coordinate
+ * @param y2 The y2 coordinate
+ * @param color The color value
+ */
+extern void __APISTATUS_internal pyfb_sdrawLine(uint8_t fbnum,
+                                                unsigned long int x1,
+                                                unsigned long int y1,
+                                                unsigned long int x2,
+                                                unsigned long int y2,
+                                                const struct pyfb_color* color);
 
 /**
  * Paints the content of the offscreen buffer to the framebuffer. This function must be callen

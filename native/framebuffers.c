@@ -1,7 +1,11 @@
+/**
+ * Core resource management and lowlevel drawing operations.
+ */
 #include "pyframebuffer.h"
 
 #include <fcntl.h>
 #include <linux/fb.h>
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

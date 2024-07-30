@@ -141,6 +141,20 @@ class Framebuffer:
         color = getColorValue(color)
         fb.pyfb_setPixel(self.fbnum, x, y, color)
 
+    def drawLine(self, x1, y1, x2, y2, color):
+        """
+        Draws a line from the Point (x1 | y1) to
+        (x2 | y2).
+
+        @param x1 The x1 coordinate
+        @param y1 The y1 coordinate
+        @param x2 The x2 coordinate
+        @param y2 The y2 coordinate
+        @param color The color value or object
+        """
+        color = getColorValue(color)
+        fb.pyfb_drawLine(self.fbnum, x1, y1, x2, y2, color)
+
     def drawHorizontalLine(self, x, y, len, color):
         """
         Draws a horizontal line on the offscreen buffer.

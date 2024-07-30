@@ -190,6 +190,35 @@ static PyObject* pyfunc_pyfb_getResolution(PyObject* self, PyObject* args) {
     return tuple;
 }
 
+/**
+ * Python wrapper for the pyfb_drawLine function.
+ * 
+ * @param self The function
+ * @param args The arguments, expecting long of the fbnum
+ * 
+ * @return Just 0
+ */
+static PyObject* pyfunc_pyfb_sdrawLine(PyObject* self, PyObject* args) {
+    unsigned char fbnum_c;
+    unsigned long int x1;
+    unsigned long int y1;
+    unsigned long int x2;
+    unsigned long int y2;
+    uint32_t color_val;
+
+    if(!PyArg_ParseTuple(args, "bkkkkI", &fbnum_c, &x1, &y1, &x2, &y2, &color_val)) {
+        PyErr_SetString(PyExc_TypeError, "Expecting arguments of type (byte, long, long, long, long, long)");
+        return NULL;
+    }
+
+    // now parse the color
+    struct pyfb_color color;
+    pyfb_initcolor_u32(&color, color_val);
+
+    // and invoke the target function
+    pyfb_sdrawLine((uint8_t)fbnum_c, x1, y1, x2, y2, &color);
+}
+
 // The module def
 
 /**
@@ -199,6 +228,7 @@ static PyMethodDef pyfb_methods[] = {
     {"pyfb_open", pyfunc_pyfb_open, METH_VARARGS, "Framebuffer open function"},
     {"pyfb_close", pyfunc_pyfb_close, METH_VARARGS, "Framebuffer close function"},
     {"pyfb_setPixel", pyfunc_pyfb_ssetPixel, METH_VARARGS, "Draw a pixel on the framebuffer"},
+    {"pyfb_drawLine", pyfunc_pyfb_sdrawLine, METH_VARARGS, "Draw a line on the framebuffer"},
     {"pyfb_drawHorizontalLine", pyfunc_pyfb_sdrawHorizontalLine, METH_VARARGS, "Draw a horizontal line on the framebuffer"},
     {"pyfb_drawVerticalLine", pyfunc_pyfb_sdrawVerticalLine, METH_VARARGS, "Draw a vertical line on the framebuffer"},
     {"pyfb_flushBuffer", pyfunc_pyfb_flushBuffer, METH_VARARGS, "Flush the offscreen buffer to the framebuffer"},
