@@ -44,6 +44,7 @@
  *
  * // unlock the lock for the next thread
  * unlock(sync_lock);
+ * \endcode
  */
 typedef atomic_flag lock_t;
 

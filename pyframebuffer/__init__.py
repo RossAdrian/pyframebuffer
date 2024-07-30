@@ -16,7 +16,7 @@ class Framebuffer:
 
     The usage to open a framebuffer is as following:
 
-    \\code{.py}
+    \code{.py}
     from pyframebuffer.color import rgb
     import pyframebuffer as fb
 
@@ -29,7 +29,7 @@ class Framebuffer:
 
 
     # If exiting the context, the framebuffer is closed cleanly
-    \\endcode
+    \endcode
     """
 
     def __init__(self, fbnum):
