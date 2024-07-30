@@ -114,6 +114,14 @@ class Framebuffer:
             return self.depth
         return None
 
+    def getResolution(self):
+        """
+        Returns the framebuffer resolution in a tuple of structure (xres, yres, depth).
+
+        @return The tuple with the framebuffer resolution values
+        """
+        return (self.xres, self.yres, self.depth)
+
     def update(self):
         """
         Updates the framebuffer by flushing the offscreen buffer to the framebuffer. This method
