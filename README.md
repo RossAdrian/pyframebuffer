@@ -26,6 +26,41 @@ console like *Raspberry Pi OS lite* or *Ubuntu Server* to see the graphics outpu
 noisy framebuffer console output is best with running a python script with the draw operations and sleep the amount of seconds
 required to see the magic of the graphics output.
 
+## Usage
+
+After installing, the general usage is as following:
+
+```py
+# Import the library
+from pyframebuffer.color import rgb
+from pyframebuffer import openfb
+
+# Create a color to draw with
+color_red = rgb(255, 0, 0) # red
+
+# Select a framebuffer to draw on (determined by it's device file number)
+framebuffer_number = 0
+
+# Open a framebuffer context
+with openfb(framebuffer_number) as fb:
+    # get framebuffer resolution
+    (xres, yres, depth) = fb.getResolution()
+
+    # draw something to the framebuffer
+    # here: drawing a red pixel in the middle of the screen
+    xpos = int(xres / 2)
+    ypos = int(yres / 2)
+    fb.drawPixel(xpos, ypos, color_red)
+
+    # And when the frame is ready, update the framebuffer to become all changes
+    # visible on the screen
+    fb.update()
+
+# When we get back here out of the context, the framebuffer device file is closed
+# cleanly. But closing the framebuffer device file does not flushes the last frame
+# to the screen. For that, please use the update() function.
+```
+
 ## Contributing
 
 See [Contributing Page](./CONTRIBUTING.md) for guidelines and development environment setup.
