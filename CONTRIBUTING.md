@@ -23,7 +23,7 @@ automaticly by saving!
 
 If you're not able to use it, you can run the following commands to format the code:
 
-**For the C sources:**
+* **For the C sources:**
 
 ```sh
 # Make sure clang-format is installed
@@ -33,7 +33,7 @@ clang-format -i $SRC
 
 This formats all C source code of the project.
 
-**For Python sources:**
+* **For Python sources:**
 
 ```sh
 # Make sure flake8 is installed
@@ -46,11 +46,7 @@ This shows formatting violations in the Python source code of the project. You s
 
 ### Naming conventions
 
-<hr>
-
-#### In the C sources
-
-<hr>
+* **In the C sources:**
 
 Follow the following steps to generate the function name:
 
@@ -100,9 +96,7 @@ Add a `drawLine` to the function name as it draws a line.
 pyfunc_sdrawLine();
 ```
 
-#### In the Python sources
-
-<hr>
+* **In the Python sources:**
 
 Just use the *camelCase* convention.
 
