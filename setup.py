@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from setuptools import setup, Extension
 import platform
+import pathlib
 
 
 def check_platform():
@@ -11,20 +12,7 @@ def check_platform():
 
 check_platform()
 
-sources = [
-    "framebuffers.c",
-    "module_pyfb.c",
-    "color.c",
-    "paint.c"
-]
-
-# Add prefix
-src_prefix = "native/"
-src = []
-
-for i in sources:
-    src.append(src_prefix + i)
-
+src = list(pathlib.Path('native').glob("*.c"))
 
 setup(name="pyframebuffer",
       version="1.0",
