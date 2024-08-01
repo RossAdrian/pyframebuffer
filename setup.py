@@ -12,7 +12,11 @@ def check_platform():
 
 check_platform()
 
-src = list(pathlib.Path('native').glob("*.c"))
+source_paths = list(pathlib.Path('native').glob("*.c"))
+src = []
+
+for i in source_paths:
+    src.append(str(i))
 
 setup(name="pyframebuffer",
       version="1.0",
