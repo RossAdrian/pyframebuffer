@@ -197,11 +197,27 @@ extern void pyfb_close(uint8_t fbnum);
  * Returns the videomode info of a specific framebuffer. If the framebuffer is not
  * opened, then the @c pyfb_videomode_info.fb_size_b field will be @c 0 . If it is
  * not 0, then the structure is valid and the framebuffer is opened.
+ * 
+ * This is the secure version of pyfb_vinfo as it locks the framebuffer before
+ * collecting the data.
  *
  * @param fbnum The framebuffer number to get the infos of
  * @param info_ptr The pointer to copy the videmode info to
  */
-extern void pyfb_vinfo(uint8_t fbnum, struct pyfb_videomode_info* info_ptr);
+extern void pyfb_svinfo(uint8_t fbnum, struct pyfb_videomode_info* info_ptr);
+
+/**
+ * Returns the videomode info of a specific framebuffer. If the framebuffer is not
+ * opened, then the @c pyfb_videomode_info.fb_size_b field will be @c 0 . If it is
+ * not 0, then the structure is valid and the framebuffer is opened.
+ * 
+ * This is the insecure version of pyfb_vinfo as it not locks the framebuffer before
+ * collecting the data.
+ *
+ * @param fbnum The framebuffer number to get the infos of
+ * @param info_ptr The pointer to copy the videmode info to
+ */
+extern void __APISTATUS_internal pyfb_vinfo(uint8_t fbnum, struct pyfb_videomode_info* info_ptr);
 
 /**
  * Paints a single pixel to the framebuffer. This function is secure because before

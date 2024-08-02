@@ -177,7 +177,7 @@ static PyObject* pyfunc_pyfb_getResolution(PyObject* self, PyObject* args) {
 
     // Else build the tuple of the resolution info and return it
     struct pyfb_videomode_info vinfo;
-    pyfb_vinfo((uint8_t)fbnum_c, &vinfo);
+    pyfb_svinfo((uint8_t)fbnum_c, &vinfo);
 
     // check if valid
     if(vinfo.fb_size_b == 0) {
