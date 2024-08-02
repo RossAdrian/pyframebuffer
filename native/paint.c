@@ -3,7 +3,12 @@
  */
 #include "pyframebuffer.h"
 
-#define ULI_TO_LI(x) ((unsigned long)(x))
+/**
+ * Short macro to convert a unsigned long int to a long int.
+ * 
+ * @param x The number variable to convert
+ */
+#define ULI_TO_LI(x) ((long int)(x))
 
 static inline long int li_abs(long int x) {
     if(x < 0) {
