@@ -179,6 +179,18 @@ class Framebuffer:
         color = getColorValue(color)
         fb.pyfb_drawVerticalLine(self.fbnum, x, y, len, color)
 
+    def drawCircle(self, xm, ym, radius, color):
+        """
+        Draws a circle on the offscreen buffer.
+
+        @param xm The x coordinate of the middle
+        @param ym The y coordinate of the middle
+        @param radius The radius of the circle
+        @param color The color value of Color object
+        """
+        color = getColorValue(color)
+        fb.pyfb_drawCircle(self.fbnum, xm, ym, radius, color)
+
 
 def openfb(num):
     """

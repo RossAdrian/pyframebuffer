@@ -10,13 +10,35 @@
  */
 #define ULI_TO_LI(x) ((long int)(x))
 
+/**
+ * Sets a pixel, but only if it is on screen, else ignored.
+ * 
+ * @param xres The x resolution
+ * @param yres The y resolution
+ * @param x The x coordinate
+ * @param y The y coordinate
+ * @param fbnum The framebuffer number
+ * @param color The color value
+ */
+#define SET_PIXEL_OR_IGNORE(fbnum, x, y, xres, yres, color) \
+    if(x < xres && y < yres) {                              \
+        pyfb_setPixel(fbnum, x, y, color);                  \
+    }
+
+/**
+ * Long int abs function.
+ * 
+ * @param x The number to remove a minus
+ * 
+ * @return The input number without possible minus
+ */
 static inline long int li_abs(long int x) {
     if(x < 0) {
-        return (unsigned long int)(x * -1);
+        return (long int)(x * -1);
     }
 
     // else
-    return (unsigned long int)x;
+    return (long int)x;
 }
 
 void __APISTATUS_internal pyfb_drawLine(uint8_t fbnum,
@@ -120,6 +142,82 @@ void __APISTATUS_internal pyfb_sdrawLine(uint8_t fbnum,
 
     // all is valid, so draw the line
     pyfb_drawLine(fbnum, x1, y1, x2, y2, color);
+
+    // ready, so return
+    pyfb_fbunlock(fbnum);
+}
+
+void __APISTATUS_internal pyfb_drawCircle(uint8_t fbnum,
+                                          unsigned long int xm,
+                                          unsigned long int ym,
+                                          unsigned long int radius,
+                                          struct pyfb_color* color) {
+    long int x0  = ULI_TO_LI(xm);
+    long int y0  = ULI_TO_LI(ym);
+    long int rad = ULI_TO_LI(radius);
+
+    long int f     = 1 - rad;
+    long int ddF_x = 0;
+    long int ddF_y = -2 * radius;
+    long int x     = 0;
+    long int y     = radius;
+
+    struct pyfb_videomode_info vinfo;
+    pyfb_vinfo(fbnum, &vinfo);
+
+    const unsigned long int xres = vinfo.vinfo.xres;
+    const unsigned long int yres = vinfo.vinfo.yres;
+
+    SET_PIXEL_OR_IGNORE(fbnum, x0, y0 + rad, xres, yres, color);
+    SET_PIXEL_OR_IGNORE(fbnum, x0, y0 - rad, xres, yres, color);
+    SET_PIXEL_OR_IGNORE(fbnum, x0 + rad, y0, xres, yres, color);
+    SET_PIXEL_OR_IGNORE(fbnum, x0 - rad, y0, xres, yres, color);
+
+    while(x < y) {
+        if(f >= 0) {
+            y -= 1;
+            ddF_y += 2;
+            f += ddF_y;
+        }
+
+        x += 1;
+        ddF_x += 2;
+        f += ddF_x + 1;
+
+        SET_PIXEL_OR_IGNORE(fbnum, x0 + x, y0 + y, xres, yres, color);
+        SET_PIXEL_OR_IGNORE(fbnum, x0 - x, y0 + y, xres, yres, color);
+        SET_PIXEL_OR_IGNORE(fbnum, x0 + x, y0 - y, xres, yres, color);
+        SET_PIXEL_OR_IGNORE(fbnum, x0 - x, y0 - y, xres, yres, color);
+        SET_PIXEL_OR_IGNORE(fbnum, x0 + y, y0 + x, xres, yres, color);
+        SET_PIXEL_OR_IGNORE(fbnum, x0 - y, y0 + x, xres, yres, color);
+        SET_PIXEL_OR_IGNORE(fbnum, x0 + y, y0 - x, xres, yres, color);
+        SET_PIXEL_OR_IGNORE(fbnum, x0 - y, y0 - x, xres, yres, color);
+    }
+}
+
+void pyfb_sdrawCircle(uint8_t fbnum,
+                      unsigned long int xm,
+                      unsigned long int ym,
+                      unsigned long int radius,
+                      struct pyfb_color* color) {
+    // first check if fbnum is valid
+    if(fbnum >= MAX_FRAMEBUFFERS) {
+        PyErr_SetString(PyExc_ValueError, "The framebuffer number is not valid");
+        return;
+    }
+
+    // Ok, then lock
+    pyfb_fblock(fbnum);
+
+    // next test if the device is really in use
+    if(!pyfb_fbused(fbnum)) {
+        // this framebuffer is not in use, so ignore
+        PyErr_SetString(PyExc_IOError, "The framebuffer is not opened");
+        pyfb_fbunlock(fbnum);
+        return;
+    }
+
+    pyfb_drawCircle(fbnum, xm, ym, radius, color);
 
     // ready, so return
     pyfb_fbunlock(fbnum);
