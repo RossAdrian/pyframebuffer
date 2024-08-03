@@ -61,7 +61,7 @@ class Framebuffer:
             self.xres = xres
             self.yres = yres
             self.depth = depth
-        finally:
+        except:
             fb.pyfb_close(self.fbnum)
 
         self.opened = True

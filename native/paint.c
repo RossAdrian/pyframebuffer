@@ -165,8 +165,8 @@ void __APISTATUS_internal pyfb_drawCircle(uint8_t fbnum,
     struct pyfb_videomode_info vinfo;
     pyfb_vinfo(fbnum, &vinfo);
 
-    const unsigned long int xres = vinfo.vinfo.xres;
-    const unsigned long int yres = vinfo.vinfo.yres;
+    const long int xres = ULI_TO_LI(vinfo.vinfo.xres);
+    const long int yres = ULI_TO_LI(vinfo.vinfo.yres);
 
     SET_PIXEL_OR_IGNORE(fbnum, x0, y0 + rad, xres, yres, color);
     SET_PIXEL_OR_IGNORE(fbnum, x0, y0 - rad, xres, yres, color);
