@@ -1,11 +1,12 @@
 """
 Core Python sources of the pyframebuffer module.
 """
+import functools
 from pyframebuffer.color import getColorValue
 
 import _pyfb as fb  # type: ignore
 
-__all__ = ["openfb", "MAX_FRAMEBUFFERS"]
+__all__ = ["openfb", "MAX_FRAMEBUFFERS", "fbuser"]
 MAX_FRAMEBUFFERS = fb.MAX_FRAMEBUFFERS
 
 
@@ -204,3 +205,26 @@ def openfb(num):
     @return The Framebuffer object
     """
     return Framebuffer(fbnum=num)
+
+
+def fbuser(fn):
+    """
+    Decorator to open a framebuffer via the Decorator API.
+
+    @param fn The function to wrap
+
+    @return The wrapper function
+    """
+    @functools.wraps(fn)
+    def wrapper(*args, **kwargs):
+        argl = list(args)
+        fbnum = argl[0]
+        ret_val = None
+        with openfb(fbnum) as fb_obj:
+            argl[0] = fb_obj
+            args = tuple(argl)
+            ret_val = fn(*args, **kwargs)
+
+        return ret_val
+
+    return wrapper
