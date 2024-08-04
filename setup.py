@@ -19,7 +19,7 @@ for i in source_paths:
     src.append(str(i))
 
 setup(name="pyframebuffer",
-      version="1.0",
+      version="0.0.1",
       author="Adrian Roß",
       author_email="adrian.ross@ross-agentur.de",
       description="A linux framebuffer primitives library written in C and Python.",
