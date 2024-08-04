@@ -67,6 +67,7 @@ class Framebuffer:
 
         self.opened = True
         # Ready
+        return self
 
     def __exit__(self, exc_type, exc_value, traceback):
         """
