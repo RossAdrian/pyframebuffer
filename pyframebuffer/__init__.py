@@ -1,10 +1,11 @@
 """
 Core Python sources of the pyframebuffer module.
 """
-import functools
 from pyframebuffer.color import getColorValue
-
 import _pyfb as fb  # type: ignore
+
+import functools
+import inspect
 
 __all__ = ["openfb", "MAX_FRAMEBUFFERS", "fbuser"]
 MAX_FRAMEBUFFERS = fb.MAX_FRAMEBUFFERS
@@ -218,13 +219,29 @@ def fbuser(fn):
     """
     @functools.wraps(fn)
     def wrapper(*args, **kwargs):
-        argl = list(args)
-        fbnum = argl[0]
+        # first check the function signature
+        signature = inspect.signature(fn)
+        first_param = next(iter(signature.parameters), None)
+
+        # declare the return value variable
         ret_val = None
-        with openfb(fbnum) as fb_obj:
-            argl[0] = fb_obj
-            args = tuple(argl)
-            ret_val = fn(*args, **kwargs)
+
+        if first_param not in kwargs:
+            # got here because target argument is not used keyworded
+            # so manipulate the args tuple
+            argl = list(args)
+            fbnum = argl[0]
+            with openfb(fbnum) as fb_obj:
+                argl[0] = fb_obj
+                args = tuple(argl)
+                ret_val = fn(*args, **kwargs)
+        else:
+            # got here because target argument is keyworded
+            # so modify the dict
+            fbnum = int(kwargs[first_param])
+            with openfb(fbnum) as fb_obj:
+                kwargs[first_param] = fb_obj
+                ret_val = fn(*args, **kwargs)
 
         return ret_val
 
