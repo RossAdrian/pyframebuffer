@@ -28,7 +28,11 @@ required to see the magic of the graphics output.
 
 ## Usage
 
-After installing, the general usage is as following:
+After installing, there are two APIs to use pyframebuffer:
+
+### The pyframebuffer Context API
+
+Here an example snippet:
 
 ```py
 # Import the library
@@ -59,6 +63,46 @@ with openfb(framebuffer_number) as fb:
 # When we get back here out of the context, the framebuffer device file is closed
 # cleanly. But closing the framebuffer device file does not flushes the last frame
 # to the screen. For that, please use the update() function.
+```
+
+### The pyframebuffer Decorator API
+
+Here an example snippet aswell:
+
+```py
+# Import the library
+from pyframebuffer.color import rgb
+from pyframebuffer import fbuser
+
+# Create a color to draw with
+color_red = rgb(255, 0, 0) # red
+
+# Select a framebuffer to draw on (determined by it's device file number)
+framebuffer_number = 0
+
+# Create a framebuffer user function
+# becomes the framebuffer object as first argument
+@fbuser
+def compositor(fb):
+    # get framebuffer resolution
+    (xres, yres, depth) = fb.getResolution()
+
+    # draw something to the framebuffer
+    # here: drawing a red pixel in the middle of the screen
+    xpos = int(xres / 2)
+    ypos = int(yres / 2)
+    fb.drawPixel(xpos, ypos, color_red)
+
+    # And when the frame is ready, update the framebuffer to become all changes
+    # visible on the screen
+    fb.update()
+
+# And now call the framebuffer user function to draw to the framebuffer
+compositor(framebuffer_number)
+
+# Yes, the argument to the framebuffer user function is a <int>
+# The decorator itself manages the context and make sure that the first argument
+# is replaced by the Framebuffer object.
 ```
 
 ## Contributing
