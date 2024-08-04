@@ -18,20 +18,30 @@ class Framebuffer:
 
     The usage to open a framebuffer is as following:
 
-    \code{.py}
+    @code{.py}
     from pyframebuffer.color import rgb
     import pyframebuffer as fb
 
     color = rgb(255, 0, 0)
 
+    # -- With the Context API
     with fb.openfb(0) as framebuffer:
         framebuffer.drawPixel(100, 100, color)
         framebuffer.update()
         # continue drawing something to the framebuffer
 
-
     # If exiting the context, the framebuffer is closed cleanly
-    \endcode
+
+    # -- With the Decorator API
+    @fb.fbuser
+    def compositor(framebuffer):
+        framebuffer.drawPixel(100, 100, color)
+        framebuffer.update()
+
+    # And now call the function
+    # 0 is the framebuffer number
+    compositor(0)
+    @endcode
     """
 
     def __init__(self, fbnum):
