@@ -14,17 +14,26 @@ Other hardware then the *Raspberry Pi 4* may be supported. But testing the frame
 
 ## Installation
 
-Download the sources from [GitHub](https://github.com/RossAdrian/pyframebuffer) and run the following commands:
-
-```sh
-sudo ./setup.py install
-```
+### Prerequisites
 
 Ensure you have installed the python development package (named `python-dev` or `python-devel`) of your Linux distribution
 to be able to build and install this package. Recommended is the installation on a headless distribution with framebuffer
 console like *Raspberry Pi OS lite* or *Ubuntu Server* to see the graphics output on the screen. Full screen display without
-noisy framebuffer console output is best with running a python script with the draw operations and sleep the amount of seconds
-required to see the magic of the graphics output.
+noisy framebuffer console output is best with running a python script which performs the drawing operations and sleeps the
+amount of seconds required to see the magic of the graphics output.
+
+To install this package, create a [virtual environment](https://docs.python.org/3/tutorial/venv.html), and activate it.
+
+Before running, make sure you have permissions to access the framebuffer device files.
+
+### Install
+
+Download the sources from [GitHub](https://github.com/RossAdrian/pyframebuffer) and activate your virtual environment. Then
+change to the projects root directory and run:
+
+```sh
+pip install .
+```
 
 ## Usage
 
