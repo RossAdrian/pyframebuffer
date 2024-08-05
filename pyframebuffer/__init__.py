@@ -154,6 +154,18 @@ class Framebuffer:
         color = getColorValue(color)
         fb.pyfb_setPixel(self.fbnum, x, y, color)
 
+    def fill(self, color):
+        """
+        Fills the complete framebuffer with one color. Using as color 0x00000000
+        or rgba(0, 0, 0, 0) is equivalent to clear the framebuffer (fill the
+        framebuffer with black).
+
+        @param color The color value or Color object
+        """
+        color = getColorValue(color)
+        for i in range(0, self.yres):
+            fb.pyfb_drawHorizontalLine(0, 0, i, self.xres, color)
+
     def drawLine(self, x1, y1, x2, y2, color):
         """
         Draws a line from the Point (x1 | y1) to
