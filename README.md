@@ -114,6 +114,16 @@ compositor(framebuffer_number)
 # is replaced by the Framebuffer object.
 ```
 
+## Documentations
+
+To generate the documentations, install `doxygen` and run the following command in the projects root directory:
+
+```sh
+doxygen
+```
+
+Then open the `html/index.html` file in your browser to see the generated documentations.
+
 ## Contributing
 
 See [Contributing Page](./CONTRIBUTING.md) for guidelines and development environment setup.
