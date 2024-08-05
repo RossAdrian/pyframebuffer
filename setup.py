@@ -5,9 +5,9 @@ import pathlib
 
 
 def check_platform():
+    print("Try installing on platform: ", platform.system())
     if platform.system() != "Linux":
         raise RuntimeError("This package does only support Linux")
-    print("Installing on platform: ", platform.system())
 
 
 check_platform()
