@@ -443,6 +443,28 @@ extern void __APISTATUS_internal pyfb_drawCircle(uint8_t fbnum,
                                                  struct pyfb_color* color);
 
 /**
+ * Fills the complete framebuffer with one color. Setting as color 0x00000000 is
+ * equivalent to clearing the framebuffer (fill with black).
+ * 
+ * This is the unsafe version. For the safe one, see the pyfb_sfill function.
+ * 
+ * @param fbnum The framebuffer number
+ * @param color The color value
+ */
+extern void __APISTATUS_internal pyfb_fill(uint8_t fbnum, struct pyfb_color* color);
+
+/**
+ * Fills the complete framebuffer with one color. Setting as color 0x00000000 is
+ * equivalent to clearing the framebuffer (fill with black).
+ * 
+ * This is the safe version. For the unsafe one see the pyfb_fill function.
+ * 
+ * @param fbnum The framebuffer number
+ * @param color The color value
+ */
+extern void pyfb_sfill(uint8_t fbnum, struct pyfb_color* color);
+
+/**
  * Paints the content of the offscreen buffer to the framebuffer. This function must be callen
  * because this is the only operation that is required to paint the content of the offscreen
  * buffer to the framebuffer. All other paint operations are only for painting to the offscreen

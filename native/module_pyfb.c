@@ -224,6 +224,35 @@ static PyObject* pyfunc_pyfb_sdrawLine(PyObject* self, PyObject* args) {
 }
 
 /**
+ * Python wrapper for the pyfb_fill function.
+ * 
+ * @param self The function
+ * @param args The arguments, expecting long of the fbnum, long of the color value
+ * 
+ * @return Just 0
+ */
+static PyObject* pyfunc_pyfb_sfill(PyObject* self, PyObject* args) {
+    unsigned char fbnum_c;
+    uint32_t color_val;
+
+    if(!PyArg_ParseTuple(args, "bI", &fbnum_c, &color_val)) {
+        PyErr_SetString(PyExc_TypeError, "Expecting arguments of type (byte, long)");
+        return NULL;
+    }
+
+    // now parse the color
+    struct pyfb_color color;
+    pyfb_initcolor_u32(&color, color_val);
+
+    // and invoke the target function
+    pyfb_sfill((uint8_t)fbnum_c, &color);
+
+    // and return just 0
+    int exitcode = 0;
+    return PyLong_FromLong(exitcode);
+}
+
+/**
  * Python wrapper for the pyfb_drawCircle function.
  * 
  * @param self The function
@@ -268,6 +297,7 @@ static PyMethodDef pyfb_methods[] = {
     {"pyfb_drawHorizontalLine", pyfunc_pyfb_sdrawHorizontalLine, METH_VARARGS, "Draw a horizontal line on the framebuffer"},
     {"pyfb_drawVerticalLine", pyfunc_pyfb_sdrawVerticalLine, METH_VARARGS, "Draw a vertical line on the framebuffer"},
     {"pyfb_drawCircle", pyfunc_pyfb_sdrawCircle, METH_VARARGS, "Draw a circle on the framebuffer"},
+    {"pyfb_fill", pyfunc_pyfb_sfill, METH_VARARGS, "Fill the framebuffer in one color"},
     {"pyfb_flushBuffer", pyfunc_pyfb_flushBuffer, METH_VARARGS, "Flush the offscreen buffer to the framebuffer"},
     {"pyfb_getResolution", pyfunc_pyfb_getResolution, METH_VARARGS, "Returns a tupel of the framebuffer resolution"},
     {NULL, NULL, 0, NULL}};
