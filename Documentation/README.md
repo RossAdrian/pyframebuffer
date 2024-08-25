@@ -2,6 +2,6 @@
 
 Welcome to pyframebuffer.
 
-Here, you have a overlook about the project documentations:
+Here, you have an overlook over the project documentations:
 
 - [Installation instructions](./Install.md)

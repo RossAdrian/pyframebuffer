@@ -24,7 +24,7 @@ We recommend to install pyframebuffer via pip, as this makes your pyframebuffer 
 managed by pip, making a upgrade as easy as remove the old package and install the new one.
 
 But sometimes, often in embedded systems, you don't have pip available. In this case, you can
-install pyframebuffer with setuptools.
+install pyframebuffer via setuptools.
 
 First, get the source code from the [pyframebuffer GitHub repository](https://github.com/RossAdrian/pyframebuffer)
 and unzip it. Next, change into the project directory, and run:
