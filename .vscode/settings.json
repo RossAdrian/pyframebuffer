@@ -28,6 +28,9 @@
         "functional": "c",
         "tuple": "c",
         "type_traits": "c",
-        "utility": "c"
+        "utility": "c",
+        ".clang-format": "yaml",
+        ".flake8": "ini",
+        "Doxyfile": "shellscript"
     }
 }
