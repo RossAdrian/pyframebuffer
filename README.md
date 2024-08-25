@@ -39,6 +39,17 @@ change to the projects root directory and run:
 pip install .
 ```
 
+Or else, install directly with pip:
+
+```sh
+# By version
+PYFB_VERSION=0.0.1
+pip install https://github.com/RossAdrian/pyframebuffer/archive/refs/tags/$(PYFB_VERSION).zip
+
+# or for actual HEAD
+pip install git+https://github.com/RossAdrian/pyframebuffer.git
+```
+
 ## Usage
 
 After installing, there are two APIs to use pyframebuffer:
