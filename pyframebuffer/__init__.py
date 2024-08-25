@@ -216,6 +216,19 @@ class Framebuffer:
         color = getColorValue(color)
         fb.pyfb_drawCircle(self.fbnum, xm, ym, radius, color)
 
+    def drawEllipse(self, xm, ym, a, b, color):
+        """
+        Draws a ellipse on the offscreen buffer.
+
+        @param xm The x coordinate of the middle
+        @param ym The y coordinate of the middle
+        @param a The long half axis
+        @param b The short half axis
+        @param color The color value
+        """
+        color = getColorValue(color)
+        fb.pyfb_drawEllipse(self.fbnum, xm, ym, a, b, color)
+
 
 def openfb(num):
     """

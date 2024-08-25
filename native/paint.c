@@ -222,3 +222,77 @@ void pyfb_sdrawCircle(uint8_t fbnum,
     // ready, so return
     pyfb_fbunlock(fbnum);
 }
+
+void __APISTATUS_internal pyfb_drawEllipse(uint8_t fbnum,
+                                           unsigned long int xm,
+                                           unsigned long int ym,
+                                           unsigned long int a,
+                                           unsigned long int b,
+                                           struct pyfb_color* color) {
+    long int al = ULI_TO_LI(a);
+    long int bl = ULI_TO_LI(b);
+    long int dx = 0;
+    long int dy = bl;
+    long a2     = al * al;
+    long b2     = bl * bl;
+    long err    = b2 - (2 * bl - 1) * a2;
+    long e2     = 0;
+
+    struct pyfb_videomode_info vinfo;
+    pyfb_vinfo(fbnum, &vinfo);
+
+    const long int xres = ULI_TO_LI(vinfo.vinfo.xres);
+    const long int yres = ULI_TO_LI(vinfo.vinfo.yres);
+
+    do {
+        SET_PIXEL_OR_IGNORE(fbnum, xm + dx, ym + dy, xres, yres, color);
+        SET_PIXEL_OR_IGNORE(fbnum, xm - dx, ym + dy, xres, yres, color);
+        SET_PIXEL_OR_IGNORE(fbnum, xm - dx, ym - dy, xres, yres, color);
+        SET_PIXEL_OR_IGNORE(fbnum, xm + dx, ym - dy, xres, yres, color);
+        e2 = 2 * err;
+
+        if(e2 < (2 * dx + 1) * b2) {
+            ++dx;
+            err += (2 * dx + 1) * b2;
+        }
+
+        if(e2 > -(2 * dy - 1) * a2) {
+            --dy;
+            err -= (2 * dy - 1) * a2;
+        }
+    } while(dy >= 0);
+
+    while(dx++ < a) {
+        SET_PIXEL_OR_IGNORE(fbnum, xm + dx, ym, xres, yres, color);
+        SET_PIXEL_OR_IGNORE(fbnum, xm - dx, ym, xres, yres, color);
+    }
+}
+
+void pyfb_sdrawEllipse(uint8_t fbnum,
+                       unsigned long int xm,
+                       unsigned long int ym,
+                       unsigned long int a,
+                       unsigned long int b,
+                       struct pyfb_color* color) {
+    // fist check if fbnum is valid
+    if(fbnum >= MAX_FRAMEBUFFERS) {
+        PyErr_SetString(PyExc_ValueError, "The framebuffer number is not valid");
+        return;
+    }
+
+    // Ok, then lock
+    pyfb_fblock(fbnum);
+
+    // next test, if the device is in use
+    if(!pyfb_fbused(fbnum)) {
+        // this framebuffer is not in use, so reject
+        PyErr_SetString(PyExc_IOError, "The framebuffer is not opened");
+        pyfb_fbunlock(fbnum);
+        return;
+    }
+
+    pyfb_drawEllipse(fbnum, xm, ym, a, b, color);
+
+    // ready, so return
+    pyfb_fbunlock(fbnum);
+}

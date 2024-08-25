@@ -443,6 +443,40 @@ extern void __APISTATUS_internal pyfb_drawCircle(uint8_t fbnum,
                                                  struct pyfb_color* color);
 
 /**
+ * Safe version to draw a ellipse on the screen.
+ * 
+ * @param fbnum The framebuffer number
+ * @param xm The x coordinate of the middle point
+ * @param ym The y coordinate of the middle point
+ * @param a The long half axis
+ * @param b The short half axis
+ * @param color The color value
+ */
+extern void pyfb_sdrawEllipse(uint8_t fbnum,
+                              unsigned long int xm,
+                              unsigned long int ym,
+                              unsigned long int a,
+                              unsigned long int b,
+                              struct pyfb_color* color);
+
+/**
+ * Unsafe version to draw a ellipse on the screen.
+ * 
+ * @param fbnum The framebuffer number
+ * @param xm The x coordinate of the middle point
+ * @param ym The y coordinate of the middle point
+ * @param a The long half axis
+ * @param b The short half axis
+ * @param color The color value
+ */
+extern void __APISTATUS_internal pyfb_drawEllipse(uint8_t fbnum,
+                                                  unsigned long int xm,
+                                                  unsigned long int ym,
+                                                  unsigned long int a,
+                                                  unsigned long int b,
+                                                  struct pyfb_color* color);
+
+/**
  * Paints the content of the offscreen buffer to the framebuffer. This function must be callen
  * because this is the only operation that is required to paint the content of the offscreen
  * buffer to the framebuffer. All other paint operations are only for painting to the offscreen
