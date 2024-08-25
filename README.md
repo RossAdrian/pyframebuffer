@@ -50,6 +50,8 @@ pip install https://github.com/RossAdrian/pyframebuffer/archive/refs/tags/$(PYFB
 pip install git+https://github.com/RossAdrian/pyframebuffer.git
 ```
 
+For other installation options, see [the installation documentations](Documentation/Install.md).
+
 ## Usage
 
 After installing, there are two APIs to use pyframebuffer:
@@ -138,6 +140,8 @@ doxygen
 ```
 
 Then open the `html/index.html` file in your browser to see the generated documentations.
+
+For a overview, see the [Project Documentations](./Documentation/README.md).
 
 ## Contributing
 
